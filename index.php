@@ -4,17 +4,26 @@
 
     if ($_POST["email"] == "logout") {
         
-        // delete cookie, redirect to login.php
+        setcookie("id", "", time() - 60*60);
+        header("Location: login.php");
+
         
     }
 
     if ($_COOKIE["id"])  {
         
-        // retrieve user details and previous diary entries from database and set them to variables which will be displayed below
+        // retrieve user details and previous diary entries from database and set them to variables which will be displayed below in the HTML
+        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "users-dbase-3133339a99","35ya:hrq'`i0","users-dbase-3133339a99");
+
+        $query = "SELECT * FROM users WHERE id = '".$_COOKIE["id"]."'";
+        
+        $result = mysqli_query($link, $query);
+        
+        $user_email = $result["email"];
         
     } else {
         
-        // redirect to login.php
+        header("Location: login.php");
         
     }
 
@@ -35,7 +44,7 @@
 
     <div class="container">
         <div class="col" id="diary-page">
-            <h1>Secret Diary</h1>
+            <h1>Secret Diary - <?php echo $user_email; ?></h1>
             <form method="post">
                 <input type="text" name="email" value="logout">
                 <button class="btn" id="log-out-btn">Log out</button>
