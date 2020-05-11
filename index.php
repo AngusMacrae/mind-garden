@@ -2,10 +2,19 @@
 
     session_start();
 
-    if ($_POST) {
+    if ($_POST["email"] == "logout") {
         
+        // delete cookie, redirect to login.php
         
+    }
+
+    if ($_COOKIE["id"])  {
         
+        // retrieve user details and previous diary entries from database and set them to variables which will be displayed below
+        
+    } else {
+        
+        // redirect to login.php
         
     }
 
@@ -25,43 +34,16 @@
 <body>
 
     <div class="container">
-        <div class="col" id="log-in-page">
+        <div class="col" id="diary-page">
             <h1>Secret Diary</h1>
-            <span><strong>Store your thoughts permanently and securely.</strong></span>
-            <span>Interested? Sign up now.</span>
-            <div class="form-container" id="sign-up-form">
-                <form method="post">
-                    <div class="form-group">
-                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Your email" required>
-                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" id="password" placeholder="Password" required>
-                    </div>
-                    <div class="form-group form-check">
-                        <input type="checkbox" class="form-check-input" id="stayCheck">
-                        <label class="form-check-label" for="stayCheck">Stay logged in</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Sign Up!</button>
-                </form>
-                <button class="btn" id="show-login-btn">Log in</button>
-            </div>
-            <div class="form-container invisible" id="login-form">
-                <form method="post">
-                    <div class="form-group">
-                        <input type="email" class="form-control" id="login-email" aria-describedby="emailHelp" placeholder="Your email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" id="login-password" placeholder="Password" required>
-                    </div>
-                    <div class="form-group form-check">
-                        <input type="checkbox" class="form-check-input" id="login-stayCheck">
-                        <label class="form-check-label" for="login-stayCheck">Stay logged in</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Log in</button>
-                </form>
-                <button class="btn" id="show-sign-up-btn">Sign up</button>
-            </div>
+            <form method="post">
+                <input type="text" name="email" value="logout">
+                <button class="btn" id="log-out-btn">Log out</button>
+            </form>
+            <h2>New diary entry</h2>
+            <textarea>enter text here</textarea>
+            <h2>Previous entries</h2>
+            <textarea></textarea>
         </div>
     </div>
 
