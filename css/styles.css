@@ -1,0 +1,30 @@
+body {
+    
+    background-image: url(/images/background-lg-valley.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    
+}
+
+#log-in-page {
+    
+    height: 100vh;
+    text-align: center;
+    
+}
+
+#log-in-page span {
+    
+    display: block;
+    margin-bottom: 1em;
+    
+}
+
+.visible {
+    display: block;
+}
+
+.invisible {
+    display: none;
+}
