@@ -1,102 +1,107 @@
 <?php
 
-    session_start();
+session_start();
 
-    $alertString = "alert will appear here";
+$alertString = "alert will appear here";
 
-    if ($_POST) {
-        
-        if (array_key_exists("logout", $_POST)) {
+if ($_POST) {
 
-            session_destroy();
+    if (array_key_exists("logout", $_POST)) {
 
+        setcookie("id", "", time() - 60*60);
+        session_destroy();
+
+    } else {
+
+        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
+
+        if (mysqli_connect_error()) {
+            echo "Failed to connect to MySQL: ".mysqli_connect_error();
+            die ("There was an error connecting to the database");
+        }
+
+        $email = $_POST["email"];
+        $password = $_POST["password"];
+        if ($remain = $_POST["remain"]) {
+            $remain = true;
         } else {
-        
-            $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
+            $remain = false;
+        }
+        $signup = $_POST["signup"];
 
-            if (mysqli_connect_error()) {
-                echo "Failed to connect to MySQL: ".mysqli_connect_error();
-                die ("There was an error connecting to the database");
+        if ($signup == 1) {
+
+            if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
+
+                $alertString = "The email address you entered is already signed up! Try logging in instead.";
+
+            } else {
+
+                signup($link, $email, $password);
+
+                $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
+                $result = mysqli_query($link, $query);
+                $row = mysqli_fetch_array($result);
+
+                login($row["id"], $remain);
+
             }
 
-            $email = $_POST["email"];
-            $password = $_POST["password"];
-            // $remain = $_POST["remain"];
-            $remain = true;
-            $signup = $_POST["signup"];
-        
-            if ($signup == 1) {
+        } else if ($signup == 0) {
 
-                if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
+            if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
 
-                    $alertString = "The email address you entered is already signed up! Try logging in instead.";
+                $row = mysqli_fetch_array($result);
 
-                } else {
-
-                    signup($link, $email, $password);
-
-                    $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
-                    $result = mysqli_query($link, $query);
-                    $row = mysqli_fetch_array($result);
+                if (password_verify($password, $row["pwdhash"])) {
 
                     login($row["id"], $remain);
 
-                }
-
-            } else if ($signup == 0) {
-
-                if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
-
-                    $row = mysqli_fetch_array($result);
-
-                    if (password_verify($password, $row["pwdhash"])) {
-
-                        login($row["id"], $remain);
-
-                    } else {
-
-                        $alertString = "Incorrect password.";
-
-                    }
-
                 } else {
 
-                    $alertString = "It seems you aren't signed up yet. You can't login until you're signed up first!";
+                    $alertString = "Incorrect password.";
 
                 }
 
+            } else {
+
+                $alertString = "It seems you aren't signed up yet. You can't login until you're signed up first!";
+
             }
-            
+
         }
 
     }
 
-    function selectUser($link, $email) {
+}
 
-        $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
-        return mysqli_query($link, $query);
+function selectUser($link, $email) {
 
+    $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
+    return mysqli_query($link, $query);
+
+}
+
+function signup($link, $email, $password) {
+
+    $query = "INSERT INTO users (email, pwdhash) VALUES ('".mysqli_real_escape_string($link, $email)."', '".password_hash($password, PASSWORD_DEFAULT)."')";
+    mysqli_query($link, $query);
+
+}
+
+function login($id, $remain) {
+
+    $_SESSION["id"] = $id;
+
+    if ($remain) {
+
+        setcookie("id", $id, time() + 60*60*24);
+        
     }
 
-    function signup($link, $email, $password) {
+    header("Location: index.php");
 
-        $query = "INSERT INTO users (email, pwdhash) VALUES ('".mysqli_real_escape_string($link, $email)."', '".password_hash($password, PASSWORD_DEFAULT)."')";
-        mysqli_query($link, $query);
-
-    }
-
-    function login($id, $remain) {
-
-        $_SESSION["id"] = $id;
-
-        if ($remain) {
-
-//            setcookie("id", $row["id"], time() + 60*60*24);
-        }
-
-        header("Location: index.php");
-
-    }
+}
 
 ?>
 
