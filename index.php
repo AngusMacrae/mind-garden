@@ -12,8 +12,14 @@
 
     if (array_key_exists("id", $_SESSION)) {
         
-        // retrieve user details and previous diary entries from database and set them to variables which will be displayed below in the HTML
         $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
+        
+        if (mysqli_connect_error()) {
+            echo "Failed to connect to MySQL: ".mysqli_connect_error();
+            die ("There was an error connecting to the database");
+        }
+        
+        // retrieve previous diary entries from database and set them to variables which will be displayed below in the HTML
         $query = "SELECT * FROM users WHERE id = '".$_SESSION["id"]."'";
         $result = mysqli_query($link, $query);
         $row = mysqli_fetch_array($result);
@@ -70,7 +76,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="js/script.js"></script>
+    <script src="js/script_index.js"></script>
 </body>
 
 </html>
