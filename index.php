@@ -2,24 +2,27 @@
 
     session_start();
 
-    if ($_POST["email"] == "logout") {
-        
-        setcookie("id", "", time() - 60*60);
-        header("Location: login.php");
+    $user_email = "";
 
+    if ($_POST["logout"] == "logout") {
+        
+        // setcookie("id", "", time() - 60*60);
+        $_SESSION["id"] = "";
+        header("Location: login.php");
         
     }
 
-    if ($_COOKIE["id"])  {
+    if ($_SESSION["id"] != "")  {
         
         // retrieve user details and previous diary entries from database and set them to variables which will be displayed below in the HTML
-        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "users-dbase-3133339a99","35ya:hrq'`i0","users-dbase-3133339a99");
+        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
 
-        $query = "SELECT * FROM users WHERE id = '".$_COOKIE["id"]."'";
+        $query = "SELECT * FROM users WHERE id = '".$_SESSION["id"]."'";
         
         $result = mysqli_query($link, $query);
+        $row = mysqli_fetch_array($result);
         
-        $user_email = $result["email"];
+        $user_email = $row["email"];
         
     } else {
         
@@ -46,7 +49,7 @@
         <div class="col" id="diary-page">
             <h1>Secret Diary - <?php echo $user_email; ?></h1>
             <form method="post">
-                <input type="text" name="email" value="logout">
+                <input type="text" name="logout" value="logout">
                 <button class="btn" id="log-out-btn">Log out</button>
             </form>
             <h2>New diary entry</h2>

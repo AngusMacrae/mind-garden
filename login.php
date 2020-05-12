@@ -2,11 +2,16 @@
 
     session_start();
 
-    $alertString = "";
+    $alertString = "alert will appear here";
 
     if ($_POST) {
         
-        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "users-dbase-3133339a99","35ya:hrq'`i0","users-dbase-3133339a99");
+        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
+        
+        if (mysqli_connect_error()) {
+            echo "Failed to connect to MySQL: ".mysqli_connect_error();
+            die ("There was an error connecting to the database");
+        } 
 
         if ($login_email = $_POST["login-email"]) {
             
@@ -15,13 +20,15 @@
             $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $login_email)."'";
             
             $result = mysqli_query($link, $query);
+            $row = mysqli_fetch_array($result);
             
             // check if login-email is present in database
             if (mysqli_num_rows($result) > 0 ) {
                 
-                if (password_verify($login_pwd, $result["pwdhash"])) {
+                if (password_verify($login_pwd, $row["pwdhash"])) {
                 
-                    setcookie("id", $result["id"], time() + 60*60*24);
+//                    setcookie("id", $row["id"], time() + 60*60*24);
+                    $_SESSION["id"] = $row["id"];
                     header("Location: index.php");
                 
                 } else {
@@ -36,7 +43,7 @@
                 
             }
 
-        } 
+        }
 
         if ($signup_email = $_POST["signup-email"]) {
             
@@ -59,19 +66,21 @@
                 $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $signup_email)."'";
 
                 $result = mysqli_query($link, $query);
+                $row = mysqli_fetch_array($result);
 
-                setcookie("id", $result["id"], time() + 60*60*24);
+//                setcookie("id", $row["id"], time() + 60*60*24);
+                $_SESSION["id"] = $row["id"];
                 header("Location: index.php");
                 
             }
+            
+            
+            
+//            $alertString = $signup_email.", ".$signup_password.", ".$result["email"];
+//            setcookie("id", 5, time() + 60*60*24);
+//            header("Location: index.php");
 
         }
-        
-    }
-
-    if ($_COOKIE["id"]) {
-        
-        header("Location: index.php");
         
     }
 
@@ -128,6 +137,7 @@
                 </form>
                 <button class="btn" id="show-sign-up-btn">Sign up</button>
             </div>
+            <p><?php echo $alertString; ?></p>
         </div>
     </div>
 
