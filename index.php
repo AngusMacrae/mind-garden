@@ -4,24 +4,19 @@
 
     $user_email = "";
 
-    if ($_POST["logout"] == "logout") {
+    if (array_key_exists("id", $_COOKIE)) {
         
-        // setcookie("id", "", time() - 60*60);
-        $_SESSION["id"] = "";
-        header("Location: login.php");
+        $_SESSION["id"] = $_COOKIE["id"];
         
     }
 
-    if ($_SESSION["id"] != "")  {
+    if (array_key_exists("id", $_SESSION)) {
         
         // retrieve user details and previous diary entries from database and set them to variables which will be displayed below in the HTML
         $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
-
         $query = "SELECT * FROM users WHERE id = '".$_SESSION["id"]."'";
-        
         $result = mysqli_query($link, $query);
         $row = mysqli_fetch_array($result);
-        
         $user_email = $row["email"];
         
     } else {
@@ -53,7 +48,9 @@
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
             <span class="navbar-text mx-sm-2">|</span>
-            <button type="button" class="btn btn-outline-danger">Log Out</button>
+            <form method="post" action="login.php">
+                <button type="submit" class="btn btn-outline-danger" id="logout-btn" name="logout" value="1">Log out</button>
+            </form>
         </div>
     </nav>
     <main role="main" class="container">

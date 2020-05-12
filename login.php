@@ -6,82 +6,96 @@
 
     if ($_POST) {
         
-        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
-        
-        if (mysqli_connect_error()) {
-            echo "Failed to connect to MySQL: ".mysqli_connect_error();
-            die ("There was an error connecting to the database");
-        } 
+        if (array_key_exists("logout", $_POST)) {
 
-        if ($login_email = $_POST["login-email"]) {
-            
-            $login_pwd = $_POST["login-password"];
-            
-            $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $login_email)."'";
-            
-            $result = mysqli_query($link, $query);
-            $row = mysqli_fetch_array($result);
-            
-            // check if login-email is present in database
-            if (mysqli_num_rows($result) > 0 ) {
-                
-                if (password_verify($login_pwd, $row["pwdhash"])) {
-                
-//                    setcookie("id", $row["id"], time() + 60*60*24);
-                    $_SESSION["id"] = $row["id"];
-                    header("Location: index.php");
-                
+            session_destroy();
+
+        } else {
+        
+            $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
+
+            if (mysqli_connect_error()) {
+                echo "Failed to connect to MySQL: ".mysqli_connect_error();
+                die ("There was an error connecting to the database");
+            }
+
+            $email = $_POST["email"];
+            $password = $_POST["password"];
+            // $remain = $_POST["remain"];
+            $remain = true;
+            $signup = $_POST["signup"];
+        
+            if ($signup == 1) {
+
+                if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
+
+                    $alertString = "The email address you entered is already signed up! Try logging in instead.";
+
                 } else {
-                    
-                    $alertString = "Incorrect password.";
-                    
+
+                    signup($link, $email, $password);
+
+                    $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
+                    $result = mysqli_query($link, $query);
+                    $row = mysqli_fetch_array($result);
+
+                    login($row["id"], $remain);
+
                 }
-                
-            } else {
-                
-                $alertString = "It seems you aren't signed up yet. You can't login until you're signed up first!";
-                
-            }
 
-        }
+            } else if ($signup == 0) {
 
-        if ($signup_email = $_POST["signup-email"]) {
-            
-            $signup_password = $_POST["signup-password"];
+                if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
 
-            $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $signup_email)."'";
+                    $row = mysqli_fetch_array($result);
 
-            $result = mysqli_query($link, $query);
+                    if (password_verify($password, $row["pwdhash"])) {
 
-            if (mysqli_num_rows($result) > 0 ) {
-                
-                $alertString = "The email address you entered is already signed up! Try logging in instead";
-            
-            } else {
-                
-                // add user to database
-                $query = "INSERT INTO users (email, pwdhash) VALUES ('".mysqli_real_escape_string($link, $signup_email)."', '".password_hash($signup_password, PASSWORD_DEFAULT)."')";
-                mysqli_query($link, $query);
-                
-                $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $signup_email)."'";
+                        login($row["id"], $remain);
 
-                $result = mysqli_query($link, $query);
-                $row = mysqli_fetch_array($result);
+                    } else {
 
-//                setcookie("id", $row["id"], time() + 60*60*24);
-                $_SESSION["id"] = $row["id"];
-                header("Location: index.php");
-                
+                        $alertString = "Incorrect password.";
+
+                    }
+
+                } else {
+
+                    $alertString = "It seems you aren't signed up yet. You can't login until you're signed up first!";
+
+                }
+
             }
             
-            
-            
-//            $alertString = $signup_email.", ".$signup_password.", ".$result["email"];
-//            setcookie("id", 5, time() + 60*60*24);
-//            header("Location: index.php");
-
         }
-        
+
+    }
+
+    function selectUser($link, $email) {
+
+        $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
+        return mysqli_query($link, $query);
+
+    }
+
+    function signup($link, $email, $password) {
+
+        $query = "INSERT INTO users (email, pwdhash) VALUES ('".mysqli_real_escape_string($link, $email)."', '".password_hash($password, PASSWORD_DEFAULT)."')";
+        mysqli_query($link, $query);
+
+    }
+
+    function login($id, $remain) {
+
+        $_SESSION["id"] = $id;
+
+        if ($remain) {
+
+//            setcookie("id", $row["id"], time() + 60*60*24);
+        }
+
+        header("Location: index.php");
+
     }
 
 ?>
@@ -108,35 +122,19 @@
                 <div class="form-container" id="sign-up-form">
                     <form method="post">
                         <div class="form-group">
-                            <input type="email" class="form-control" id="signup-email" name="signup-email" aria-describedby="emailHelp" placeholder="Your email" required>
+                            <input type="email" class="form-control" id="signup-email" name="email" aria-describedby="emailHelp" placeholder="Your email" required>
                             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control" id="signup-password" name="signup-password" placeholder="Password" required>
+                            <input type="password" class="form-control" id="signup-password" name="password" placeholder="Password" required>
                         </div>
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="signup-stayCheck" name="signup-stayCheck">
+                            <input type="checkbox" class="form-check-input" id="signup-stayCheck" name="remain">
                             <label class="form-check-label" for="stayCheck">Stay logged in</label>
                         </div>
-                        <button type="submit" class="btn btn-primary">Sign Up!</button>
+                        <button type="submit" class="btn btn-outline-primary" name="signup" value="0">Log in</button>
+                        <button type="submit" class="btn btn-primary" name="signup" value="1">Sign Up!</button>
                     </form>
-                    <button class="btn" id="show-login-btn">Log in</button>
-                </div>
-                <div class="form-container invisible" id="login-form">
-                    <form method="post">
-                        <div class="form-group">
-                            <input type="email" class="form-control" id="login-email" name="login-email" aria-describedby="emailHelp" placeholder="Your email" required>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" id="login-password" name="login-password" placeholder="Password" required>
-                        </div>
-                        <div class="form-group form-check">
-                            <input type="checkbox" name="login-stayCheck" class="form-check-input" id="login-stayCheck">
-                            <label class="form-check-label" for="login-stayCheck">Stay logged in</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Log in</button>
-                    </form>
-                    <button class="btn" id="show-sign-up-btn">Sign up</button>
                 </div>
                 <p><?php echo $alertString; ?></p>
             </div>
