@@ -2,7 +2,10 @@
 
 session_start();
 
-$alertString = "alert will appear here";
+$alertString = "";
+$email = "";
+$password = "";
+$checked = "";
 
 if ($_POST) {
 
@@ -10,6 +13,7 @@ if ($_POST) {
 
         setcookie("id", "", time() - 60*60);
         session_destroy();
+        $alertString = "<div class="alert alert-success" role="alert">You have been logged out.</div>";
 
     } else {
 
@@ -22,18 +26,20 @@ if ($_POST) {
 
         $email = $_POST["email"];
         $password = $_POST["password"];
-        if ($remain = $_POST["remain"]) {
-            $remain = true;
-        } else {
-            $remain = false;
-        }
+        $remain = isset($_POST["remain"]) ? true : false;
+        $checked = ($remain) ? "checked" : "";
+//        if ($remain = $_POST["remain"]) {
+//            $remain = true;
+//        } else {
+//            $remain = false;
+//        }
         $signup = $_POST["signup"];
 
         if ($signup == 1) {
 
             if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
 
-                $alertString = "The email address you entered is already signed up! Try logging in instead.";
+                $alertString = "<div class="alert alert-warning" role="alert">The email address you entered is already signed up! Try logging in instead.</div>";
 
             } else {
 
@@ -59,13 +65,13 @@ if ($_POST) {
 
                 } else {
 
-                    $alertString = "Incorrect password.";
+                    $alertString = "<div class="alert alert-danger" role="alert">Incorrect password.</div>";
 
                 }
 
             } else {
 
-                $alertString = "It seems you aren't signed up yet. You can't login until you're signed up first!";
+                $alertString = "<div class="alert alert-warning" role="alert">It seems you aren't signed up yet. You can't login until you're signed up first!</div>";
 
             }
 
@@ -111,7 +117,7 @@ function login($id, $remain) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Diary</title>
+    <title>Mind Garden</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -120,28 +126,29 @@ function login($id, $remain) {
 
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col col-md-8 col-xl-6" id="log-in-page">
-                <h1>Secret Diary</h1>
-                <span><strong>Store your thoughts permanently and securely.</strong></span>
-                <span>Interested? Sign up now.</span>
+            <div class="col col-md-8 col-xl-6 d-flex flex-column justify-content-center" id="log-in-page">
+                <h1>Mind Garden</h1>
+                <span><strong>Keeping a diary? Writing a novel? Or just need a place to organise your thoughts?</strong></span>
+                <span><strong>Use Mind Garden.</strong></span>
+                <span>Sign up for free now.</span>
                 <div class="form-container" id="sign-up-form">
                     <form method="post">
                         <div class="form-group">
-                            <input type="email" class="form-control" id="signup-email" name="email" aria-describedby="emailHelp" placeholder="Your email" required>
+                            <input type="email" class="form-control" id="signup-email" name="email" aria-describedby="emailHelp" placeholder="Your email address" required value="<?php echo $email; ?>">
                             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control" id="signup-password" name="password" placeholder="Password" required>
+                            <input type="password" class="form-control" id="signup-password" name="password" placeholder="Your password" required value="<?php echo $password; ?>">
                         </div>
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="signup-stayCheck" name="remain">
+                            <input type="checkbox" class="form-check-input" id="signup-stayCheck" name="remain" <?php echo $checked; ?>>
                             <label class="form-check-label" for="stayCheck">Stay logged in</label>
                         </div>
                         <button type="submit" class="btn btn-outline-primary" name="signup" value="0">Log in</button>
                         <button type="submit" class="btn btn-primary" name="signup" value="1">Sign Up!</button>
                     </form>
                 </div>
-                <p><?php echo $alertString; ?></p>
+                <?php echo $alertString; ?>
             </div>
         </div>
     </div>

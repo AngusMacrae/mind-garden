@@ -46,9 +46,9 @@
 
 <body id="index-body">
     <nav class="navbar fixed-top navbar-dark bg-dark">
-        <div class="container justify-content-start">
+        <div class="container col-md-7 justify-content-start">
             <a class="navbar-brand">Secret Diary</a>
-            <span class="navbar-text mr-auto">Logged in as <?php echo $user_email; ?></span>
+            <span class="navbar-text mr-auto">Logged in - <?php echo $user_email; ?></span>
             <form class="form-inline">
                 <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
@@ -59,15 +59,16 @@
             </form>
         </div>
     </nav>
-    <main role="main" class="container">
+    <main role="main" class="container col-md-7">
         <div class="row">
             <div class="col" id="diary-page">
-                <div class="d-flex align-items-center">
-                    <h2 class="mr-auto">New diary entry</h2>
-                    <span>2020/05/12</span>
-                </div>
-                <textarea class="form-control">enter text here</textarea>
-                <h2>Previous entries</h2>
+                <form method="post" class="form-inline">
+                    <div class="form-group">
+                        <label for="new-note-field">New note</label>
+                        <textarea class="form-control" id="new-note-field" name="note"></textarea>
+                    </div>
+                </form>
+                <h3>Previous entries</h3>
                 <textarea></textarea>
             </div>
         </div>
