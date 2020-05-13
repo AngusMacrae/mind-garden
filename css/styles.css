@@ -57,3 +57,7 @@ nav .container {
 #index-body {
     padding-top: 56px;
 }
+
+.alert {
+    margin-top: 15px !important;
+}

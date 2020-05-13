@@ -13,7 +13,7 @@ if ($_POST) {
 
         setcookie("id", "", time() - 60*60);
         session_destroy();
-        $alertString = "<div class="alert alert-success" role="alert">You have been logged out.</div>";
+        $alertString = "<div class='alert alert-success'>You have been logged out.</div>";
 
     } else {
 
@@ -28,18 +28,13 @@ if ($_POST) {
         $password = $_POST["password"];
         $remain = isset($_POST["remain"]) ? true : false;
         $checked = ($remain) ? "checked" : "";
-//        if ($remain = $_POST["remain"]) {
-//            $remain = true;
-//        } else {
-//            $remain = false;
-//        }
         $signup = $_POST["signup"];
 
         if ($signup == 1) {
 
             if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
 
-                $alertString = "<div class="alert alert-warning" role="alert">The email address you entered is already signed up! Try logging in instead.</div>";
+                $alertString = "<div class='alert alert-warning'>The email address you entered is already signed up! Try logging in instead.</div>";
 
             } else {
 
@@ -65,13 +60,13 @@ if ($_POST) {
 
                 } else {
 
-                    $alertString = "<div class="alert alert-danger" role="alert">Incorrect password.</div>";
+                    $alertString = "<div class='alert alert-danger'>Incorrect password.</div>";
 
                 }
 
             } else {
 
-                $alertString = "<div class="alert alert-warning" role="alert">It seems you aren't signed up yet. You can't login until you're signed up first!</div>";
+                $alertString = "<div class='alert alert-warning'>It seems you aren't signed up yet. You can't login until you're signed up first!</div>";
 
             }
 
