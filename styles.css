@@ -1,0 +1,96 @@
+html {
+    width: 100vw;
+    position: relative;
+    /* overflow-x: hidden; */
+}
+
+body {
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.92);
+}
+
+#login-body {
+    background-image: url(images/background-lg-valley.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    overflow-x: hidden;
+}
+
+.page-row {
+    min-height: 100vh;
+}
+
+#log-in-page span {
+    display: block;
+}
+
+#emailHelp {
+    color: white !important;
+}
+
+.btn-outline-primary {
+    background-color: white;
+    border-color: white;
+}
+
+input[type="checkbox"] {
+    position: relative;
+    top: 2px;
+}
+
+.alert {
+    text-shadow: none;
+}
+
+.navbar-collapse {
+    flex-grow: 0;
+}
+
+#index-body {
+    padding-top: 72px;
+    min-height: 100vh;
+}
+
+#index-body::before {
+    content: "";
+    background-image: url(images/background-lg-valley.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    display: block;
+    filter: blur(5px);
+}
+
+#index-body .row {
+    /* margin: 0; */
+}
+
+#notes-container .form-control {
+    height: auto;
+    overflow-y: auto;
+    min-height: 150px;
+    max-height: 700px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+}
+
+#notes-container .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.55);
+}
+
+/* .badge-secondary {}
+
+.badge-success {
+    display: none;
+} */
+
+.badge-danger {
+    display: none;
+}
