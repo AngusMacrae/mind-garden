@@ -1,6 +1,8 @@
 <?php
 
-if (key_exists("userID", $_POST)) {
+session_start();
+
+if ($payload = json_decode(file_get_contents('php://input')) && array_key_exists("id", $_SESSION)) {
 
     $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
 
@@ -9,52 +11,56 @@ if (key_exists("userID", $_POST)) {
         die ("There was an error connecting to the database");
     }
 
-    if ($nextNoteID = $_POST["nextNoteID"]) {
+    $operation = $payload->operation;
 
-        // retrieveNotes($_POST["userID"], $nextNoteID) {}
+    if ($operation == "delete") {
 
+        $targetNote = $payload->targetNote;
+
+        $query = "DELETE FROM notes WHERE id = '".$targetNote."'";
+        $result = mysqli_query($link, $query);
+
+        if(!$result) {
+            die('Could not delete data: ' . mysql_error());
+        }
+
+        $response = array( 'status'=> 'ok', 'operation'=> 'delete', 'targetNote'=> $targetNote);
+        
     }
 
-    if ($noteToDelete = $_POST["deleteNoteID"]) {
+    if ($operation == "update") {
 
-        // deleteNote($noteToDelete) {}
+        $targetNote = $payload->targetNote;
+        $content = $payload->noteContent;
+        // $lastupdated = $payload->lastUpdated;
+        
+        // $query = "UPDATE notes SET content = '".$content."', lastupdated = '".$lastupdated."' WHERE id = '".$targetNote."'";
+        // $query = "UPDATE notes SET content = '".$content."' WHERE id = '".$targetNote."'";
+        // $result = mysqli_query($link, $query);
+        // if(!$result) {
+        //     die('Could not update data: ' . mysql_error());
+        // }
 
+        $response = array( 'status'=> 'ok', 'operation'=> 'update', 'targetNote'=> $targetNote);
+        
     }
+    
+    if ($operation == "new") {
 
-    if ($noteToUpdate = $_POST["noteToUpdate"]) {
+        $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".$_SESSION["id"].", '', '', '')";
+        $result = mysqli_query($link, $query);
+        if(!$result) {
+            die('Could not create new record: ' . mysql_error());
+        }
 
-        // call updateNote($noteToUpdate) {}
-
+        $response = array( 'status'=> 'ok', 'operation'=> 'new');
+        
     }
-
+    
+} else {
+    $response = array( 'status'=> 'bad', 'message'=> 'Invalid request');
 }
 
-
-// retrieve previous diary entries from database and set them to variables which will be displayed below in the HTML
-$query = "SELECT * FROM users WHERE id = '".$_SESSION["id"]."'";
-$result = mysqli_query($link, $query);
-$row = mysqli_fetch_array($result);
-$user_email = $row["email"];
-
-
-function retrieveNotes($userID, $nextNoteID) {
-
-    // retrieve next five (if that many exist) notes in notes table matching userID
-    // echo notes as JSON - noteID, content, time created, time last updated
-    // if no more notes, echo sth which the JS can see to let the user know
-
-}
-
-function deleteNote($noteID) {
-
-    // delete note corresponding to $noteID
-
-}
-
-function updateNote($noteID) {
-
-    // if noteID is new then create new note, otherwise update note content and time last updated
-
-}
+echo json_encode($response);
 
 ?>
