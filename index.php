@@ -19,7 +19,6 @@ if (array_key_exists("id", $_SESSION)) {
         die ("There was an error connecting to the database");
     }
 
-    // retrieve previous diary entries from database and set them to variables which will be displayed below in the HTML
     $query = "SELECT * FROM users WHERE id = '".$_SESSION["id"]."'";
     $result = mysqli_query($link, $query);
     $row = mysqli_fetch_array($result);
@@ -61,7 +60,7 @@ if (array_key_exists("id", $_SESSION)) {
                     <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 </form>
-                <form method="post" action="login.php">
+                <form class="form-inline" method="post" action="login.php">
                     <button type="submit" class="btn btn-outline-danger" id="logout-btn" name="logout" value="1">Log
                         out</button>
                 </form>
@@ -69,21 +68,28 @@ if (array_key_exists("id", $_SESSION)) {
         </div>
     </nav>
 
-    <main role="main" class="container col-md-7">
+    <main role="main" class="container">
         <div class="row">
-            <div class="col" id="notes-container">
+            <div class="col col-md-10 col-lg-8 mx-auto text-center" id="notes-container">
                 <h4>New note</h4>
-                <small>2020/05/21 - 15:10 <span class="badge badge-secondary">Saving...</span><span
-                        class="badge badge-success">Changes
-                        saved!</span><span class="badge badge-danger">Save
-                        failed!</span></small>
-                <div class="form-control mt-1 mb-3" id="new-note-field" contenteditable="true"></div>
+                <div class="d-flex align-items-center">
+                    <small>2020/05/21 - 16:12 <span class="badge badge-secondary">Saving...</span><span
+                            class="badge badge-success">Changes
+                            saved!</span><span class="badge badge-danger">Save
+                            failed!</span></small>
+                    <button class="btn btn-primary btn-sm ml-auto">Archive note</button>
+                </div>
+                <div class="form-control mt-1 mb-3 text-left" id="new-note-field" contenteditable="true"></div>
                 <h4>Previous notes</h4>
-                <small>2020/05/20 - 10:34 <span class="badge badge-secondary">Saving...</span><span
-                        class="badge badge-success">Changes
-                        saved!</span><span class="badge badge-danger">Save
-                        failed!</span></small>
-                <div class="form-control mt-1 mb-3 previous-entry" contenteditable="true">Today I am so PMS-y it's
+                <div class="d-flex align-items-center">
+                    <small>2020/05/20 - 10:34 <span class="badge badge-secondary">Saving...</span><span
+                            class="badge badge-success">Changes
+                            saved!</span><span class="badge badge-danger">Save
+                            failed!</span></small>
+                    <button class="btn btn-outline-danger btn-sm ml-auto">Delete note</button>
+                </div>
+                <div class="form-control mt-1 mb-3 previous-entry text-left" contenteditable="true">Today I am so PMS-y
+                    it's
                     moronic. I had to punch my teddy bear over 13 times just to get the image of Tiffani and Jeremiah
                     trying out for the HOCKEY TEAM out of my head. They were my best friends. Now I only harbor malice
                     towards them. I don't need this baloney, I have too much homework to do to deal with that. Right now
@@ -91,11 +97,15 @@ if (array_key_exists("id", $_SESSION)) {
                     go die for all I care. I feel like I am completely alone, and dressed only in my punkest expression.
                     I'm gonna IM Tracie and see if she wants to get a milkshake before I am forced to eat another
                     cheesecake.</div>
-                <small>2020/05/14 - 19:01 <span class="badge badge-secondary">Saving...</span><span
-                        class="badge badge-success">Changes
-                        saved!</span><span class="badge badge-danger">Save
-                        failed!</span></small>
-                <div class="form-control mt-1 mb-3 previous-entry" contenteditable="true">What a busy day today! I never
+                <div class="d-flex align-items-center">
+                    <small>2020/05/20 - 10:34 <span class="badge badge-secondary">Saving...</span><span
+                            class="badge badge-success">Changes
+                            saved!</span><span class="badge badge-danger">Save
+                            failed!</span></small>
+                    <button class="btn btn-outline-danger btn-sm ml-auto">Delete note</button>
+                </div>
+                <div class="form-control mt-1 mb-3 previous-entry text-left" contenteditable="true">What a busy day
+                    today! I never
                     had a moment’s rest. The day started with my alarm clock blaring at 7am. I had to be at the Smith’s
                     house by 8am to baby-sit. I really didn’t want to wake up so early on a Saturday, but I’m saving
                     money to buy a new iPod and couldn’t say no to an all-day babysitting job.
@@ -133,6 +143,8 @@ if (array_key_exists("id", $_SESSION)) {
 
                     Finally after all that shopping, we headed home because I was exhausted. Today was a fun day, but I
                     can’t wait to sleep in tomorrow!</div>
+
+                <button class="btn btn-secondary d-block mx-auto mb-5">Load more notes</button>
             </div>
         </div>
     </main>
@@ -146,7 +158,7 @@ if (array_key_exists("id", $_SESSION)) {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
-    <script src="js/script_index.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>
