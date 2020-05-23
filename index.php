@@ -3,7 +3,7 @@
 session_start();
 
 $user_email = "";
-$previous_notes = "<p>You have no saved notes</p>";
+$archived_notes_html = "<p>You have no archived notes</p>";
 
 if (array_key_exists("id", $_COOKIE)) {
 
@@ -26,10 +26,8 @@ if (array_key_exists("id", $_SESSION)) {
     $user_email = $row["email"];
 
     // grab previous posts 
-    $query = "SELECT * FROM notes WHERE userid = '".$_SESSION["id"]."'";
+    $query = "SELECT * FROM notes WHERE userid = '".$_SESSION["id"]."' ORDER BY id DESC";
     if ($result = mysqli_query($link, $query)) {
-
-        $notes = "";
 
         $row = mysqli_fetch_array($result);
         $note_id = $row["id"];
@@ -40,7 +38,7 @@ if (array_key_exists("id", $_SESSION)) {
         
         <article data-noteID="' . $note_id .'">
         <div class="d-flex align-items-center">
-        <small>' . $note_created . ' <span class="badge badge-secondary saving">Saving...</span><span
+        <small>Last changed on ' . $note_lastupdated . ' <span class="badge badge-secondary saving">Saving...</span><span
             class="badge badge-success saved">Changes
             saved!</span><span class="badge badge-danger save-failed">Save
             failed!</span><span class="badge badge-secondary deleting">Deleting...</span><span
@@ -52,6 +50,8 @@ if (array_key_exists("id", $_SESSION)) {
     </article>
         
         ';
+        
+        $previous_notes = "";
 
         while ($row = mysqli_fetch_array($result)) {
 
@@ -63,21 +63,25 @@ if (array_key_exists("id", $_SESSION)) {
             
             <article data-noteID="' . $note_id .'">
             <div class="d-flex align-items-center">
-            <small>' . $note_created . ' <span class="badge badge-secondary saving">Saving...</span><span
+            <small>Last changed on ' . $note_lastupdated . ' <span class="badge badge-secondary saving">Saving...</span><span
                 class="badge badge-success saved">Changes
                 saved!</span><span class="badge badge-danger save-failed">Save
                 failed!</span><span class="badge badge-secondary deleting">Deleting...</span><span
                 class="badge badge-success deleted">Note deleted!</span><span class="badge badge-danger delete-failed">Delete
                 failed!</span></small>
-                <button class="btn btn-outline-danger btn-sm ml-auto deleteNoteBtn visible" id="testDeleteBtn">Delete note</button>
+                <button class="btn btn-danger btn-sm ml-auto deleteNoteBtn visible" id="testDeleteBtn">Delete note</button>
             </div>
             <div class="form-control mt-1 mb-3 text-left noteInputField" contenteditable="true">' . $note_content . '</div>
         </article>
             
             ';
 
-            $notes .= $note;
+            $previous_notes .= $note;
 
+        }
+
+        if ($previous_notes != "") {
+            $archived_notes_html = $previous_notes;
         }
         
     };
@@ -129,64 +133,15 @@ if (array_key_exists("id", $_SESSION)) {
     <main role="main" class="container">
             <section class="col col-md-10 col-lg-8 mx-auto text-center notes-container" id="newNoteSection">
                 <h4 id="newNoteHeader">New note</h4>
+
                 <?php echo $first_note; ?>
-                <!-- <article data-noteID="9999">
-                    <div class="d-flex align-items-center">
-                    <small>2020/05/21 - 16:12 <span class="badge badge-secondary saving">Saving...</span><span
-                        class="badge badge-success saved">Changes
-                        saved!</span><span class="badge badge-danger save-failed">Save
-                        failed!</span><span class="badge badge-secondary deleting">Deleting...</span><span
-                        class="badge badge-success deleted">Note deleted!</span><span class="badge badge-danger delete-failed">Delete
-                        failed!</span></small>
-                        <button class="btn btn-primary btn-sm ml-auto archiveNoteBtn visible">Archive note</button>
-                    </div>
-                    <div class="form-control mt-1 mb-3 text-left noteInputField" id="new-note-field" contenteditable="true"></div>
-                </article> -->
+
             </section>
             <section class="col col-md-10 col-lg-8 mx-auto text-center notes-container" id="previousNotesSection">
-                <h4 id="previousNotesHeader">Previous notes</h4>
-                <!-- <article data-noteID="5">
-                    <div class="d-flex align-items-center">
-                    <small>2020/05/21 - 16:12 <span class="badge badge-secondary saving">Saving...</span><span
-                        class="badge badge-success saved">Changes
-                        saved!</span><span class="badge badge-danger save-failed">Save
-                        failed!</span><span class="badge badge-secondary deleting">Deleting...</span><span
-                        class="badge badge-success deleted">Note deleted!</span><span class="badge badge-danger delete-failed">Delete
-                        failed!</span></small>
-                        <button class="btn btn-outline-danger btn-sm ml-auto deleteNoteBtn visible" id="testDeleteBtn">Delete note</button>
-                    </div>
-                    <div class="form-control mt-1 mb-3 text-left noteInputField" contenteditable="true">Today I am so PMS-y
-                    it's
-                    moronic. I had to punch my teddy bear over 13 times just to get the image of Tiffani and Jeremiah
-                    trying out for the HOCKEY TEAM out of my head. They were my best friends. Now I only harbor malice
-                    towards them. I don't need this baloney, I have too much homework to do to deal with that. Right now
-                    I'm listening to The New Kids on the Block and all it's doing is making me more PMS-y. Jeremiah can
-                    go die for all I care. I feel like I am completely alone, and dressed only in my punkest expression.
-                    I'm gonna IM Tracie and see if she wants to get a milkshake before I am forced to eat another
-                    cheesecake.</div>
-                </article>
-                <article data-noteID="7">
-                    <div class="d-flex align-items-center">
-                    <small>2020/05/21 - 16:12 <span class="badge badge-secondary saving">Saving...</span><span
-                        class="badge badge-success saved">Changes
-                        saved!</span><span class="badge badge-danger save-failed">Save
-                        failed!</span><span class="badge badge-secondary deleting">Deleting...</span><span
-                        class="badge badge-success deleted">Note deleted!</span><span class="badge badge-danger delete-failed">Delete
-                        failed!</span></small>
-                        <button class="btn btn-outline-danger btn-sm ml-auto deleteNoteBtn visible">Delete note</button>
-                    </div>
-                    <div class="form-control mt-1 mb-3 text-left noteInputField" contenteditable="true">Today I am so PMS-y
-                    it's
-                    moronic. I had to punch my teddy bear over 13 times just to get the image of Tiffani and Jeremiah
-                    trying out for the HOCKEY TEAM out of my head. They were my best friends. Now I only harbor malice
-                    towards them. I don't need this baloney, I have too much homework to do to deal with that. Right now
-                    I'm listening to The New Kids on the Block and all it's doing is making me more PMS-y. Jeremiah can
-                    go die for all I care. I feel like I am completely alone, and dressed only in my punkest expression.
-                    I'm gonna IM Tracie and see if she wants to get a milkshake before I am forced to eat another
-                    cheesecake.</div>
-                </article> -->
-                
-                <?php echo $previous_notes; ?>
+                <h4 id="previousNotesHeader">Archived notes</h4>   
+
+                <?php echo $archived_notes_html; ?>
+
             </section>
             <!-- <button class="btn btn-secondary d-block mx-auto mb-5">Load more notes</button> -->
         
