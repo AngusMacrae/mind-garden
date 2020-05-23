@@ -96,6 +96,9 @@ function signup($link, $email, $password) {
     $query = "INSERT INTO users (email, pwdhash) VALUES ('".mysqli_real_escape_string($link, $email)."', '".password_hash($password, PASSWORD_DEFAULT)."')";
     mysqli_query($link, $query);
 
+    $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".mysqli_insert_id($link).", '', '', '')";
+    mysqli_query($link, $query);
+
 }
 
 function login($id, $remain) {

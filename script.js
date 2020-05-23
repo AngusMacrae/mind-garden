@@ -133,7 +133,7 @@ function updateNote(noteIDToUpdate) {
 
     let note = main.querySelector('[data-noteID="' + noteIDToUpdate + '"]');
     let noteContent = note.querySelector(".noteInputField").textContent;
-    // let lastUpdated = new Date();
+    let lastUpdated = new Date();
 
     const headers = {
         "Content-Type": "application/json",
@@ -145,8 +145,8 @@ function updateNote(noteIDToUpdate) {
         "operation": "update",
         "targetNote": noteIDToUpdate,
         "noteContent": noteContent,
+        "lastUpdated": lastUpdated
     }
-    // "lastUpdated": lastUpdated 
 
     console.log(payload);
 

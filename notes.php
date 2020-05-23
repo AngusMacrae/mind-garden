@@ -1,8 +1,6 @@
 <?php
 
-session_start();
-
-if ($payload = json_decode(file_get_contents('php://input')) && array_key_exists("id", $_SESSION)) {
+if ($payload = json_decode(file_get_contents('php://input'))) {
 
     $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
 
@@ -12,6 +10,7 @@ if ($payload = json_decode(file_get_contents('php://input')) && array_key_exists
     }
 
     $operation = $payload->operation;
+    $userid = $payload->userID;
 
     if ($operation == "delete") {
 
@@ -32,14 +31,13 @@ if ($payload = json_decode(file_get_contents('php://input')) && array_key_exists
 
         $targetNote = $payload->targetNote;
         $content = $payload->noteContent;
-        // $lastupdated = $payload->lastUpdated;
+        $lastupdated = $payload->lastUpdated;
         
-        // $query = "UPDATE notes SET content = '".$content."', lastupdated = '".$lastupdated."' WHERE id = '".$targetNote."'";
-        // $query = "UPDATE notes SET content = '".$content."' WHERE id = '".$targetNote."'";
-        // $result = mysqli_query($link, $query);
-        // if(!$result) {
-        //     die('Could not update data: ' . mysql_error());
-        // }
+        $query = "UPDATE notes SET content = '".$content."', lastupdated = '".$lastupdated."' WHERE id = '".$targetNote."'";
+        $result = mysqli_query($link, $query);
+        if(!$result) {
+            die('Could not update data: ' . mysql_error());
+        }
 
         $response = array( 'status'=> 'ok', 'operation'=> 'update', 'targetNote'=> $targetNote);
         
@@ -47,7 +45,7 @@ if ($payload = json_decode(file_get_contents('php://input')) && array_key_exists
     
     if ($operation == "new") {
 
-        $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".$_SESSION["id"].", '', '', '')";
+        $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".$userid.", '', '', '')";
         $result = mysqli_query($link, $query);
         if(!$result) {
             die('Could not create new record: ' . mysql_error());
