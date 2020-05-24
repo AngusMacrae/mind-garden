@@ -30,10 +30,13 @@ if ($payload = json_decode(file_get_contents('php://input'))) {
     if ($operation == "update") {
 
         $targetNote = $payload->targetNote;
-        $content = $payload->noteContent;
+
+        $content = strtr($payload->noteContent, array("\r\n" => '<br />', "\r" => '<br />', "\n" => '<br />')); 
+         
+        // $content = $payload->noteContent;
         $lastupdated = $payload->lastUpdated;
         
-        $query = "UPDATE notes SET content = '".$content."', lastupdated = '".$lastupdated."' WHERE id = '".$targetNote."'";
+        $query = "UPDATE notes SET content = '".mysqli_real_escape_string($link, $content)."', lastupdated = '".$lastupdated."' WHERE id = '".$targetNote."'";
         $result = mysqli_query($link, $query);
         if(!$result) {
             die('Could not update data: ' . mysql_error());

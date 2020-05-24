@@ -9,11 +9,11 @@ body {
 
 #login-body {
     background-image: url(images/background-lg-valley.jpg);
-    background-repeat: no-repeat;
+    /* background-repeat: no-repeat; */
     background-size: cover;
     background-position: center;
-    /* background-attachment: fixed; */
-    overflow-x: hidden;
+    background-attachment: fixed;
+    /* overflow-x: hidden; */
 }
 
 
@@ -52,6 +52,11 @@ input[type="checkbox"] {
     display: inline-flex;
 }
 
+#yin-yang-logo {
+    width: 20px;
+    height: 20px;
+}
+
 #index-body {
     padding-top: 72px;
     min-height: 100vh;
@@ -60,7 +65,8 @@ input[type="checkbox"] {
 #index-body::before {
     content: "";
     background-image: url(images/background-lg-valley.jpg);
-    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* background-repeat: no-repeat; */
     background-size: cover;
     background-position: center;
     position: absolute;
@@ -76,7 +82,8 @@ main section {
     padding: 0 !important;
 }
 
-.notes-container .form-control {
+.notes-container .noteInputField {
+    white-space: pre-wrap;
     height: auto;
     overflow-y: auto;
     min-height: 150px;
@@ -87,17 +94,22 @@ main section {
 
 }
 
-.notes-container .form-control:focus {
+.notes-container .noteInputField:focus {
     background-color: rgba(255, 255, 255, 0.55);
 }
 
-.notes-container small {
-    display: inline-block;
+.last-changed {
+    margin-right: 0.6em;
 }
 
+.last-changed,
 .badge,
 article button {
     display: none;
+}
+
+.last-changed.visible {
+    display: block;
 }
 
 .badge.visible {

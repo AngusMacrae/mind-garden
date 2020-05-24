@@ -2,8 +2,6 @@
 
 session_start();
 
-// redirect to main page if already logged in - see end of video 1
-
 $alertString = "";
 $email = "";
 $password = "";
@@ -45,14 +43,6 @@ if ($_POST) {
 
                 signup($link, $email, $password);
                 login(mysqli_insert_id($link), $remain);
-
-//                $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
-//                $result = mysqli_query($link, $query);
-//                login($row["id"], $remain);
-                
-//                $result = selectUser($link, $email);
-//                $row = mysqli_fetch_array($result);
-//                login($row["id"], $remain);
 
             }
 
@@ -106,9 +96,7 @@ function login($id, $remain) {
     $_SESSION["id"] = $id;
 
     if ($remain) {
-
         setcookie("id", $id, time() + 60*60*24);
-        
     }
 
     header("Location: index.php");

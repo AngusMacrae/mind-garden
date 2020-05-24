@@ -1,6 +1,4 @@
 const main = document.querySelector("main");
-const newNoteSection = document.getElementById("newNoteSection");
-const previousNotesSection = document.getElementById("previousNotesSection");
 const noteInputFields = document.querySelectorAll(".noteInputField");
 const archiveNoteBtn = document.querySelector(".archiveNoteBtn");
 
@@ -9,9 +7,10 @@ let APIurl = "/notes.php"
 
 archiveNoteBtn.addEventListener("click", function (e) {
 
+    let noteToArchive = this.closest("article");
+    let noteIDToArchive = noteToArchive.dataset.noteid;
 
-    // fetch request to create new note
-    // if successful, reload the page
+    showAlert("archiving", noteIDToArchive);
 
     const headers = {
         "Content-Type": "application/json",
@@ -40,14 +39,17 @@ archiveNoteBtn.addEventListener("click", function (e) {
         })
         .then(jsonresponse => {
             if (jsonresponse.status = "ok") {
-                location.reload();
+                showAlert("archived", noteIDToArchive);
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             } else {
                 throw 'Server error';
             }
         })
         .catch(error => {
             console.log(error);
-            // display alert
+            showAlert("archive-failed", noteIDToArchive);
         });
 
 });
@@ -58,15 +60,17 @@ for (let i = 0; i < noteInputFields.length; i++) {
 
     noteInputFields[i].addEventListener("input", function (e) {
 
-        let noteIDToUpdate = this.closest("article").dataset.noteid;
+        let note = this.closest("article");
+        let lastUpdated = moment().format('YYYY-MM-DD [at] HH:mm');
+        note.querySelector(".last-changed-field").textContent = lastUpdated;
+        note.querySelector(".last-changed").classList.add("visible");
 
+        let noteIDToUpdate = note.dataset.noteid;
         showAlert("saving", noteIDToUpdate);
 
         clearTimeout(timer);
-        console.log("cleared")
         timer = setTimeout(() => {
-            console.log("calling update function");
-            updateNote(noteIDToUpdate);
+            updateNote(noteIDToUpdate, lastUpdated);
             timer = null;
         }, 2000);
 
@@ -121,19 +125,20 @@ main.addEventListener("click", function (e) {
                 showAlert("delete-failed", noteIDToDelete);
                 e.target.removeAttribute("disabled");
                 e.target.focus();
-            });
+            })
 
     }
 
 });
 
-function updateNote(noteIDToUpdate) {
-
-    // sends request to server to update this note
+function updateNote(noteIDToUpdate, lastUpdated) {
 
     let note = main.querySelector('[data-noteID="' + noteIDToUpdate + '"]');
-    let noteContent = note.querySelector(".noteInputField").textContent;
-    let lastUpdated = new Date();
+    let noteContent = note.querySelector(".noteInputField").innerHTML;
+    let patt2 = new RegExp("<div>", "g");
+    let patt3 = new RegExp("</div>", "g");
+    let patt4 = new RegExp("<br>", "g");
+    noteContent = noteContent.replace(patt2, "\n").replace(patt3, "").replace(patt4, "");
 
     const headers = {
         "Content-Type": "application/json",
@@ -180,11 +185,16 @@ function updateNote(noteIDToUpdate) {
 
 function showAlert(alertType, noteID) {
 
-    // alertType can be one of saving, saved, save-failed, deleting, deleted, delete-failed
+    // alertType can be one of saving, saved, save-failed, deleting, deleted, delete-failed, archiving, archived, archive-failed
     let note = main.querySelector('[data-noteID="' + noteID + '"]');
     let alerts = note.querySelectorAll(".badge");
     alerts.forEach(elem => elem.classList.remove("visible"));
     let alertToShow = note.querySelector("." + alertType);
     alertToShow.classList.add("visible");
+    if (alertType == "saved") {
+        setTimeout(() => {
+            alertToShow.classList.remove("visible");
+        }, 4000);
+    }
 
 }
