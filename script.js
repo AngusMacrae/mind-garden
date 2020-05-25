@@ -134,11 +134,11 @@ main.addEventListener("click", function (e) {
 function updateNote(noteIDToUpdate, lastUpdated) {
 
     let note = main.querySelector('[data-noteID="' + noteIDToUpdate + '"]');
-    let noteContent = note.querySelector(".noteInputField").innerHTML;
-    let patt2 = new RegExp("<div>", "g");
-    let patt3 = new RegExp("</div>", "g");
-    let patt4 = new RegExp("<br>", "g");
-    noteContent = noteContent.replace(patt2, "\n").replace(patt3, "").replace(patt4, "");
+    let noteContent = note.querySelector(".noteInputField").value;
+    // let patt2 = new RegExp("<div>", "g");
+    // let patt3 = new RegExp("</div>", "g");
+    // let patt4 = new RegExp("<br>", "g");
+    // noteContent = noteContent.replace(patt2, "\n").replace(patt3, "").replace(patt4, "");
 
     const headers = {
         "Content-Type": "application/json",
