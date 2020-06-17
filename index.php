@@ -98,7 +98,6 @@ if (array_key_exists("id", $_SESSION)) {
             </section>
             <section class="col col-md-10 col-lg-8 mx-auto text-center notes-container" id="previousNotesSection">
                 <h4 id="previousNotesHeader">Archived notes</h4>
-                <p>You have no archived notes</p>"
 
                 <?php foreach($previous_notes as $note): ?>
                 <article data-noteID="<?php echo $note["id"]; ?>">
@@ -117,6 +116,8 @@ if (array_key_exists("id", $_SESSION)) {
                     <textarea class="form-control mt-1 mb-3 text-left noteInputField"><?php echo $note["content"]; ?></textarea>
                 </article>
                 <?php endforeach; ?>
+
+                <p id="noArchivedAlert">You have no archived notes</p>
 
             </section>
             <!-- <button class="btn btn-secondary d-block mx-auto mb-5">Load more notes</button> -->

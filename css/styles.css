@@ -119,6 +119,7 @@ main section {
   margin-right: 0.6em;
 }
 
+article + #noArchivedAlert,
 .last-changed,
 .badge,
 article button {
