@@ -3,7 +3,6 @@
 session_start();
 
 $user_email = "";
-$archived_notes_html = "<p>You have no archived notes</p>";
 
 if (array_key_exists("id", $_COOKIE)) {
 
@@ -20,6 +19,7 @@ if (array_key_exists("id", $_SESSION)) {
         die ("There was an error connecting to the database");
     }
 
+    // get user email
     $query = "SELECT * FROM users WHERE id = '".$_SESSION["id"]."'";
     $result = mysqli_query($link, $query);
     $row = mysqli_fetch_array($result);
@@ -30,58 +30,12 @@ if (array_key_exists("id", $_SESSION)) {
     if ($result = mysqli_query($link, $query)) {
 
         $row = mysqli_fetch_array($result);
-        $note_id = $row["id"];
-        $note_content = $row["content"];
-        $note_created = $row["created"];
-        $note_lastupdated = $row["lastupdated"];
-        $first_note = '
-        
-        <article data-noteID="' . $note_id .'">
-            <div class="d-flex align-items-center">
-            <small class="last-changed">Last changed <span class="last-changed-field">' . $note_lastupdated . '</span></small><small class="alerts-container"><span class="badge badge-secondary saving">Saving...</span><span
-                class="badge badge-success saved">Changes
-                saved!</span><span class="badge badge-danger save-failed">Save
-                failed!</span><span class="badge badge-secondary archiving">Archiving...</span><span
-                class="badge badge-success archived">Note archived!</span><span class="badge badge-danger archive-failed">Archive
-                failed!</span></small>
-                <button class="btn btn-primary btn-sm ml-auto archiveNoteBtn visible">Archive note</button>
-            </div>
-            <textarea class="form-control mt-1 mb-3 text-left noteInputField">' . $note_content . '</textarea>
-        </article>
-        
-        ';
-        
-        $previous_notes = "";
+        $first_note = $row;
 
+        $index = 0;
         while ($row = mysqli_fetch_array($result)) {
-
-            $note_id = $row["id"];
-            $note_content = $row["content"];
-            $note_created = $row["created"];
-            $note_lastupdated = $row["lastupdated"];
-            $note = '
-            
-            <article data-noteID="' . $note_id .'">
-            <div class="d-flex align-items-center">
-            <small class="last-changed visible">Last changed <span class="last-changed-field">' . $note_lastupdated . '</span></small><small class="alerts-container"><span class="badge badge-secondary saving">Saving...</span><span
-                class="badge badge-success saved">Changes
-                saved!</span><span class="badge badge-danger save-failed">Save
-                failed!</span><span class="badge badge-secondary deleting">Deleting...</span><span
-                class="badge badge-success deleted">Note deleted!</span><span class="badge badge-danger delete-failed">Delete
-                failed!</span></small>
-                <button class="btn btn-danger btn-sm ml-auto deleteNoteBtn visible" id="testDeleteBtn">Delete note</button>
-            </div>
-            <textarea class="form-control mt-1 mb-3 text-left noteInputField">' . $note_content . '</textarea>
-        </article>
-            
-            ';
-
-            $previous_notes .= $note;
-
-        }
-
-        if ($previous_notes != "") {
-            $archived_notes_html = $previous_notes;
+            $previous_notes[$index] = $row;
+            $index +=1;
         }
         
     };
@@ -125,13 +79,44 @@ if (array_key_exists("id", $_SESSION)) {
             <section class="col col-md-10 col-lg-8 mx-auto text-center notes-container" id="newNoteSection">
                 <h4 id="newNoteHeader">New note</h4>
 
-                <?php echo $first_note; ?>
+                <article data-noteID="<?php echo $first_note["id"]; ?>">
+                    <div class="d-flex align-items-center">
+                        <small class="last-changed">Last changed <span class="last-changed-field"><?php echo $first_note["lastupdated"]; ?></span></small>
+                        <small class="alerts-container">
+                            <span class="badge badge-secondary saving">Saving...</span>
+                            <span class="badge badge-success saved">Changes saved!</span>
+                            <span class="badge badge-danger save-failed">Save failed!</span>
+                            <span class="badge badge-secondary archiving">Archiving...</span>
+                            <span class="badge badge-success archived">Note archived!</span>
+                            <span class="badge badge-danger archive-failed">Archive failed!</span>
+                        </small>
+                        <button class="btn btn-primary btn-sm ml-auto archiveNoteBtn visible">Archive note</button>
+                    </div>
+                    <textarea class="form-control mt-1 mb-3 text-left noteInputField"><?php echo $first_note["content"]; ?></textarea>
+                </article>
 
             </section>
             <section class="col col-md-10 col-lg-8 mx-auto text-center notes-container" id="previousNotesSection">
-                <h4 id="previousNotesHeader">Archived notes</h4>   
+                <h4 id="previousNotesHeader">Archived notes</h4>
+                <p>You have no archived notes</p>"
 
-                <?php echo $archived_notes_html; ?>
+                <?php foreach($previous_notes as $note): ?>
+                <article data-noteID="<?php echo $note["id"]; ?>">
+                    <div class="d-flex align-items-center">
+                        <small class="last-changed visible">Last changed <span class="last-changed-field"><?php echo $note["lastupdated"]; ?></span></small>
+                        <small class="alerts-container">
+                            <span class="badge badge-secondary saving">Saving...</span>
+                            <span class="badge badge-success saved">Changes saved!</span>
+                            <span class="badge badge-danger save-failed">Save failed!</span>
+                            <span class="badge badge-secondary deleting">Deleting...</span>
+                            <span class="badge badge-success deleted">Note deleted!</span>
+                            <span class="badge badge-danger delete-failed">Delete failed!</span>
+                        </small>
+                        <button class="btn btn-danger btn-sm ml-auto deleteNoteBtn visible" id="testDeleteBtn">Delete note</button>
+                    </div>
+                    <textarea class="form-control mt-1 mb-3 text-left noteInputField"><?php echo $note["content"]; ?></textarea>
+                </article>
+                <?php endforeach; ?>
 
             </section>
             <!-- <button class="btn btn-secondary d-block mx-auto mb-5">Load more notes</button> -->
