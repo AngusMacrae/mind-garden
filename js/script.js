@@ -2,7 +2,7 @@ const main = document.querySelector('main');
 const noteInputFields = document.querySelectorAll('.noteInputField');
 const archiveNoteBtn = document.querySelector('.archiveNoteBtn');
 
-const APIurl = '/notes.php';
+const APIurl = '/api/notes.php';
 // userID is also available as a variable
 
 archiveNoteBtn.addEventListener('click', function (e) {
