@@ -1,200 +1,138 @@
-const main = document.querySelector("main");
-const noteInputFields = document.querySelectorAll(".noteInputField");
-const archiveNoteBtn = document.querySelector(".archiveNoteBtn");
+const main = document.querySelector('main');
+const noteInputFields = document.querySelectorAll('.noteInputField');
+const archiveNoteBtn = document.querySelector('.archiveNoteBtn');
 
-let APIurl = "/notes.php"
+const APIurl = '/notes.php';
 // userID is also available as a variable
 
-archiveNoteBtn.addEventListener("click", function (e) {
+archiveNoteBtn.addEventListener('click', function (e) {
+  const noteToArchive = this.closest('article');
+  const noteIDToArchive = noteToArchive.dataset.noteid;
 
-    let noteToArchive = this.closest("article");
-    let noteIDToArchive = noteToArchive.dataset.noteid;
+  showAlert('archiving', noteIDToArchive);
 
-    showAlert("archiving", noteIDToArchive);
+  const headers = {
+    'Access-Control-Origin': '*',
+  };
 
-    const headers = {
-        "Content-Type": "application/json",
-        "Access-Control-Origin": "*"
-    }
-
-    const payload = {
-        "userID": userID,
-        "operation": "new",
-    }
-
-    console.log(payload);
-
-    fetch(APIurl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            console.log(response.status);
-            if (response.status == 200) {
-                return response.json();
-            } else {
-                throw 'Server error';
-            }
-        })
-        .then(jsonresponse => {
-            if (jsonresponse.status = "ok") {
-                showAlert("archived", noteIDToArchive);
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
-            } else {
-                throw 'Server error';
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            showAlert("archive-failed", noteIDToArchive);
-        });
-
+  fetch(`${APIurl}?noteID=${noteIDToArchive}&userID=${userID}`, {
+    method: 'POST',
+    headers: headers,
+  })
+    .then(response => {
+      if (response.status == 200) {
+        showAlert('archived', noteIDToArchive);
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        throw `Failed - server responsed with ${response.status}`;
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      showAlert('archive-failed', noteIDToArchive);
+    });
 });
 
 for (let i = 0; i < noteInputFields.length; i++) {
+  let timer = 0;
 
-    let timer = 0;
+  noteInputFields[i].addEventListener('input', function (e) {
+    const note = this.closest('article');
+    const lastUpdated = moment().format('YYYY-MM-DD [at] HH:mm');
+    note.querySelector('.last-changed-field').textContent = lastUpdated;
+    note.querySelector('.last-changed').classList.add('visible');
 
-    noteInputFields[i].addEventListener("input", function (e) {
+    const noteIDToUpdate = note.dataset.noteid;
+    showAlert('saving', noteIDToUpdate);
 
-        let note = this.closest("article");
-        let lastUpdated = moment().format('YYYY-MM-DD [at] HH:mm');
-        note.querySelector(".last-changed-field").textContent = lastUpdated;
-        note.querySelector(".last-changed").classList.add("visible");
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      updateNote(noteIDToUpdate, lastUpdated);
+      timer = null;
+    }, 2000);
+  });
+}
 
-        let noteIDToUpdate = note.dataset.noteid;
-        showAlert("saving", noteIDToUpdate);
+main.addEventListener('click', function (e) {
+  if (e.target.classList.contains('deleteNoteBtn')) {
+    e.target.setAttribute('disabled', 'true');
 
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            updateNote(noteIDToUpdate, lastUpdated);
-            timer = null;
-        }, 2000);
+    const noteToDelete = e.target.closest('article');
+    const noteIDToDelete = noteToDelete.dataset.noteid;
 
-    });
+    e.target.classList.toggle('visible');
+    showAlert('deleting', noteIDToDelete);
 
-};
-
-main.addEventListener("click", function (e) {
-
-    if (e.target.classList.contains("deleteNoteBtn")) {
-
-        e.target.setAttribute("disabled", "true");
-
-        let noteToDelete = e.target.closest("article");
-        let noteIDToDelete = noteToDelete.dataset.noteid;
-
-        e.target.classList.toggle("visible");
-        showAlert("deleting", noteIDToDelete);
-
-        const headers = {
-            "Content-Type": "application/json",
-            "Access-Control-Origin": "*"
+    fetch(`${APIurl}?noteID=${noteIDToDelete}&userID=${userID}`, {
+      method: 'DELETE',
+    })
+      .then(response => {
+        if (response.status == 204) {
+          showAlert('deleted', noteIDToDelete);
+          noteToDelete.classList.add('deleted');
+          setTimeout(() => noteToDelete.remove(), 1500);
+        } else {
+          throw `Failed - server responsed with ${response.status}`;
         }
-
-        const payload = {
-            "userID": userID,
-            "operation": "delete",
-            "targetNote": noteIDToDelete
-        }
-
-        console.log(payload);
-
-        fetch(APIurl, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(jsonresponse => {
-                console.log(jsonresponse);
-                if (jsonresponse.status == "ok") {
-                    showAlert("deleted", noteIDToDelete);
-                    noteToDelete.classList.add("deleted");
-                    setTimeout(() => noteToDelete.remove(), 1500);
-                } else {
-                    throw "Serverside error - note was not deleted";
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-                e.target.classList.toggle("visible");
-                showAlert("delete-failed", noteIDToDelete);
-                e.target.removeAttribute("disabled");
-                e.target.focus();
-            })
-
-    }
-
+      })
+      .catch(error => {
+        console.log(error);
+        e.target.classList.toggle('visible');
+        showAlert('delete-failed', noteIDToDelete);
+        e.target.removeAttribute('disabled');
+        e.target.focus();
+      });
+  }
 });
 
 function updateNote(noteIDToUpdate, lastUpdated) {
+  const note = main.querySelector('[data-noteID="' + noteIDToUpdate + '"]');
+  let noteContent = note.querySelector('.noteInputField').value;
+  // const patt2 = new RegExp("<div>", "g");
+  // const patt3 = new RegExp("</div>", "g");
+  // const patt4 = new RegExp("<br>", "g");
+  // noteContent = noteContent.replace(patt2, "\n").replace(patt3, "").replace(patt4, "");
 
-    let note = main.querySelector('[data-noteID="' + noteIDToUpdate + '"]');
-    let noteContent = note.querySelector(".noteInputField").value;
-    // let patt2 = new RegExp("<div>", "g");
-    // let patt3 = new RegExp("</div>", "g");
-    // let patt4 = new RegExp("<br>", "g");
-    // noteContent = noteContent.replace(patt2, "\n").replace(patt3, "").replace(patt4, "");
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Origin': '*',
+  };
 
-    const headers = {
-        "Content-Type": "application/json",
-        "Access-Control-Origin": "*"
-    }
+  const payload = {
+    noteContent: noteContent,
+    lastUpdated: lastUpdated,
+  };
 
-    const payload = {
-        "userID": userID,
-        "operation": "update",
-        "targetNote": noteIDToUpdate,
-        "noteContent": noteContent,
-        "lastUpdated": lastUpdated
-    }
-
-    console.log(payload);
-
-    fetch(APIurl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            console.log(response.status);
-            if (response.status == 200) {
-                return response.json();
-            } else {
-                throw 'Server error';
-            }
-        })
-        .then(jsonresponse => {
-            console.log(jsonresponse);
-            if (jsonresponse.status == "ok") {
-                showAlert("saved", noteIDToUpdate);
-            } else {
-                throw "Serverside error - note was not deleted";
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            showAlert("save-failed", noteIDToUpdate);
-        });
-
+  fetch(`${APIurl}?noteID=${noteIDToUpdate}&userID=${userID}`, {
+    method: 'PUT',
+    headers: headers,
+    body: JSON.stringify(payload),
+  })
+    .then(response => {
+      if (response.status == 200) {
+        showAlert('saved', noteIDToUpdate);
+        return response.json();
+      } else {
+        throw `Failed - server responsed with ${response.status}`;
+      }
+    })
+    .then(responseData => console.log(responseData))
+    .catch(error => {
+      showAlert('save-failed', noteIDToUpdate);
+      console.log(error);
+    });
 }
 
 function showAlert(alertType, noteID) {
-
-    // alertType can be one of saving, saved, save-failed, deleting, deleted, delete-failed, archiving, archived, archive-failed
-    let note = main.querySelector('[data-noteID="' + noteID + '"]');
-    let alerts = note.querySelectorAll(".badge");
-    alerts.forEach(elem => elem.classList.remove("visible"));
-    let alertToShow = note.querySelector("." + alertType);
-    alertToShow.classList.add("visible");
-    if (alertType == "saved") {
-        setTimeout(() => {
-            alertToShow.classList.remove("visible");
-        }, 4000);
-    }
-
+  // alertType can be one of saving, saved, save-failed, deleting, deleted, delete-failed, archiving, archived, archive-failed
+  const note = main.querySelector('[data-noteID="' + noteID + '"]');
+  const alerts = note.querySelectorAll('.badge');
+  alerts.forEach(elem => elem.classList.remove('visible'));
+  const alertToShow = note.querySelector('.' + alertType);
+  alertToShow.classList.add('visible');
+  if (alertType == 'saved') {
+    setTimeout(() => {
+      alertToShow.classList.remove('visible');
+    }, 4000);
+  }
 }
