@@ -16,7 +16,7 @@ if ($_POST) {
         $_COOKIE["id"] = "";
         unset($_SESSION);
         session_destroy();
-        $alertString = "<div class='alert col-md-8 col-lg-6 my-4 mx-auto alert-success'>You have been logged out.</div>";
+        $alertString = createAlert("success", "You have been logged out.");
         
     } else {
 
@@ -37,7 +37,7 @@ if ($_POST) {
 
             if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
 
-                $alertString = "<div class='alert col-md-8 col-lg-6 my-4 mx-auto alert-warning'>The email address you entered is already signed up! Try logging in instead.</div>";
+                $alertString = createAlert("warning", "The email address you entered is already signed up! Try logging in instead.");
 
             } else {
 
@@ -58,13 +58,13 @@ if ($_POST) {
 
                 } else {
 
-                    $alertString = "<div class='alert col-md-8 col-lg-6 my-4 mx-auto alert-danger'>Incorrect password.</div>";
+                    $alertString = createAlert("danger", "Incorrect password.");
 
                 }
 
             } else {
 
-                $alertString = "<div class='alert col-md-8 col-lg-6 my-4 mx-auto alert-warning'>It seems you aren't signed up yet. You can't login until you're signed up first!</div>";
+                $alertString = createAlert("warning", "It seems you aren't signed up yet. You can't login until you're signed up first!");
 
             }
 
@@ -100,6 +100,13 @@ function login($id, $remain) {
     }
 
     header("Location: index.php");
+
+}
+
+function createAlert($type, $message) {
+
+    // $type can be warning, danger or success
+    return "<div class='alert col-md-8 col-lg-6 my-4 mx-auto alert-".$type."'>".$message."</div>";
 
 }
 
