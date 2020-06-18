@@ -3,7 +3,6 @@ const noteInputFields = document.querySelectorAll('.note textarea');
 const archiveNoteBtn = document.querySelector('.archive-note-btn');
 
 const APIurl = '/api/notes.php';
-// userID is also available as a variable
 
 archiveNoteBtn.addEventListener('click', function (e) {
   const noteToArchive = this.closest('.note');
@@ -15,16 +14,16 @@ archiveNoteBtn.addEventListener('click', function (e) {
     'Access-Control-Origin': '*',
   };
 
-  fetch(`${APIurl}?noteID=${noteIDToArchive}&userID=${userID}`, {
+  fetch(APIurl, {
     method: 'POST',
     headers: headers,
   })
     .then(response => {
-      if (response.status == 200) {
+      if (response.status == 201) {
         showAlert('archived', noteIDToArchive);
         setTimeout(() => location.reload(), 2000);
       } else {
-        throw `Failed - server responsed with ${response.status}`;
+        throw `Failed - ${response.status} server response`;
       }
     })
     .catch(error => {
@@ -63,7 +62,7 @@ main.addEventListener('click', function (e) {
     e.target.classList.toggle('d-none');
     showAlert('deleting', noteIDToDelete);
 
-    fetch(`${APIurl}?noteID=${noteIDToDelete}&userID=${userID}`, {
+    fetch(`${APIurl}?noteID=${noteIDToDelete}`, {
       method: 'DELETE',
     })
       .then(response => {
@@ -72,7 +71,7 @@ main.addEventListener('click', function (e) {
           noteToDelete.classList.add('deleted');
           setTimeout(() => noteToDelete.remove(), 1500);
         } else {
-          throw `Failed - server responsed with ${response.status}`;
+          throw `Failed - ${response.status} server response`;
         }
       })
       .catch(error => {
@@ -99,7 +98,7 @@ function updateNote(noteIDToUpdate, lastUpdated) {
     lastUpdated: lastUpdated,
   };
 
-  fetch(`${APIurl}?noteID=${noteIDToUpdate}&userID=${userID}`, {
+  fetch(`${APIurl}?noteID=${noteIDToUpdate}`, {
     method: 'PUT',
     headers: headers,
     body: JSON.stringify(payload),
@@ -109,7 +108,7 @@ function updateNote(noteIDToUpdate, lastUpdated) {
         showAlert('saved', noteIDToUpdate);
         return response.json();
       } else {
-        throw `Failed - server responsed with ${response.status}`;
+        throw `Failed - ${response.status} server response`;
       }
     })
     .then(responseData => console.log(responseData))

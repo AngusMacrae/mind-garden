@@ -11,59 +11,60 @@ if (mysqli_connect_error()) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-if (isset($_GET["userID"]) && isset($_GET["noteID"]) && $_GET["userID"] == $_SESSION["id"]) {
+if (isset($_SESSION["id"])) {
 
     if ($method == "GET") {}
 
-    if ($method == "PUT") {
+    if ($method == "PUT" && isset($_GET["noteID"])) {
         
         $payload = json_decode(file_get_contents('php://input'));
-        // $content = strtr($payload->noteContent, array("\r\n" => '<br />', "\r" => '<br />', "\n" => '<br />')); 
-        $content = $payload->noteContent;
-        $lastupdated = $payload->lastUpdated;
-        
-        $query = "UPDATE notes SET content = '".mysqli_real_escape_string($link, $content)."', lastupdated = '".$lastupdated."' WHERE id = '".$_GET["noteID"]."'";
-        $result = mysqli_query($link, $query);
 
-        if(!$result) {
-            http_response_code(400);
-            die('Could not update data: ' . mysql_error());
+        if (isset($payload->noteContent) && isset($payload->lastUpdated)) {
+
+            $query = "UPDATE notes SET content = '".mysqli_real_escape_string($link, $payload->noteContent)."', lastupdated = '".$payload->lastUpdated."' WHERE id = '".$_GET["noteID"]."' AND userid = '".$_SESSION["id"]."'";
+            $result = mysqli_query($link, $query);
+
+            if(!$result) {
+                http_response_code(400);
+                die('Could not update note: ' . mysql_error());
+            } else {
+                http_response_code(200);
+                echo json_encode($payload);
+            }
+
         } else {
-            http_response_code(200);
-            $response = array( 'noteID'=> $_GET["noteID"], 'noteContent'=> $content, 'lastUpdated'=> $lastupdated);
-            echo json_encode($response);
+            http_response_code(400);
+            die('Invalid request body');
         }
         
     }
 
     if ($method == "POST") {
 
-        $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".$_GET["userID"].", '', '', '')";
+        $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".$_SESSION["id"].", '', '', '')";
         $result = mysqli_query($link, $query);
 
         if(!$result) {
-            http_response_code(400);
+            http_response_code(500);
             die('Could not archive note: ' . mysql_error());
         } else {
-            http_response_code(200);
-            $response = array( 'noteID'=> $_GET["noteID"], 'userID'=> $_GET["userID"]);
+            http_response_code(201);
+            $response = array( 'newNoteID'=> mysqli_insert_id($link));
             echo json_encode($response);
         }
 
     }
 
-    if ($method == "DELETE") {
+    if ($method == "DELETE"  && isset($_GET["noteID"])) {
 
-        $query = "DELETE FROM notes WHERE id = '".$_GET["noteID"]."'";
+        $query = "DELETE FROM notes WHERE id = '".$_GET["noteID"]."' AND userid = '".$_SESSION["id"]."'";
         $result = mysqli_query($link, $query);
         
         if(!$result) {
             http_response_code(400);
-            echo "Note was not deleted";
-            die('Could not delete data: ' . mysql_error());
+            die('Could not delete note: ' . mysql_error());
         } else {
             http_response_code(204);
-            echo "Note deleted";
         }
 
     }

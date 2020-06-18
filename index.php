@@ -3,9 +3,7 @@
 session_start();
 
 if (array_key_exists("id", $_COOKIE)) {
-
     $_SESSION["id"] = $_COOKIE["id"];
-
 }
 
 if (isset($_SESSION["id"])) {
@@ -132,9 +130,6 @@ if (isset($_SESSION["id"])) {
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
     <script src="js/moment.min.js"></script>
-    <script>
-        const userID = <?php echo $_SESSION["id"]; ?>; 
-    </script>
     <script src="js/script.js"></script>
 </body>
 
