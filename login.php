@@ -36,8 +36,7 @@ if (array_key_exists("logout", $_POST)) {
         if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
             $alertString = createAlert("warning", "The email address you entered is already signed up! Try logging in instead.");
         } else {
-            signup($link, $email, $password);
-            login(mysqli_insert_id($link), $remain);
+            signup($link, $email, $password, $remain);
         }
 
     } else if ($signup == 0) {
@@ -65,12 +64,15 @@ function selectUser($link, $email) {
     return mysqli_query($link, $query);
 }
 
-function signup($link, $email, $password) {
+function signup($link, $email, $password, $remain) {
     $query = "INSERT INTO users (email, pwdhash) VALUES ('".mysqli_real_escape_string($link, $email)."', '".password_hash($password, PASSWORD_DEFAULT)."')";
     mysqli_query($link, $query);
+    $newUserID = mysqli_insert_id($link);
 
-    $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".mysqli_insert_id($link).", '', '', '')";
+    $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".$newUserID.", '', '', '')";
     mysqli_query($link, $query);
+
+    login($newUserID, $remain);
 }
 
 function login($id, $remain) {
