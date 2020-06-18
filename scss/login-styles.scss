@@ -1,25 +1,20 @@
 @import 'shared';
 
-.page-row {
+main {
   min-height: 100vh;
-}
-
-#emailHelp {
-  color: inherit !important;
-}
-
-.btn-outline-primary {
-  background-color: white;
-  border-color: white;
-}
-
-input[type='checkbox'] {
-  position: relative;
-  top: 1px;
 }
 
 .yin-yang-logo {
   width: 80px;
   position: relative;
   bottom: 3px;
+}
+
+.form-text {
+  color: inherit !important;
+}
+
+input[type='checkbox'] {
+  position: relative;
+  top: 1px;
 }

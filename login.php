@@ -101,36 +101,35 @@ function createAlert($type, $message) {
 <body class="text-light">
 
     <div class="container">
-        <div class="row page-row align-items-center">
-            <main class="col text-center">
+        <main class="row align-items-center">
+            <div class="col text-center">
                 <h1><img src="images/yin-yang.svg" class="yin-yang-logo mr-2">Mind Garden</h1>
                 <p><strong>Keeping a diary? Writing a novel? Or just need a place to organise your thoughts?</strong></p>
                 <p><strong>Use Mind Garden.</strong></p>
                 <p>Sign up for free now.</p>
-                <div class="form-container col-12 col-md-6 col-lg-4 mx-auto" id="sign-up-form">
+                <div class="form-container col-12 col-md-6 col-lg-4 mx-auto">
                     <form method="post">
                         <div class="form-group">
-                            <input type="email" class="form-control" id="signup-email" name="email"
-                                aria-describedby="emailHelp" placeholder="Your email address" required
+                            <input type="email" class="form-control" name="email" placeholder="Your email address" required
                                 value="<?php echo $email; ?>">
-                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                            <small class="form-text text-muted">We'll never share your email with anyone else.</small>
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control" id="signup-password" name="password"
+                            <input type="password" class="form-control" name="password"
                                 placeholder="Your password" required value="<?php echo $password; ?>">
                         </div>
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="signup-remain" name="remain"
+                            <input type="checkbox" class="form-check-input" id="remain" name="remain"
                                 <?php echo ($remain) ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="signup-remain">Stay logged in</label>
+                            <label class="form-check-label" for="remain">Stay logged in</label>
                         </div>
-                        <button type="submit" class="btn btn-outline-primary" name="action" value="login">Log in</button>
+                        <button type="submit" class="btn btn-secondary" name="action" value="login">Log in</button>
                         <button type="submit" class="btn btn-primary" name="action" value="signup">Sign Up!</button>
                     </form>
                 </div>
                 <?php echo $alertString; ?>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
