@@ -1,0 +1,82 @@
+body {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.92);
+  background-image: url(../images/background-lg-valley.jpg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.no-shadow {
+  text-shadow: none;
+}
+
+body {
+  padding-top: 72px;
+  min-height: 100vh;
+}
+
+.navbar-collapse {
+  -webkit-box-flex: 0;
+      -ms-flex-positive: 0;
+          flex-grow: 0;
+}
+
+.yin-yang-logo {
+  width: 30px;
+  position: relative;
+  bottom: 2px;
+}
+
+.note {
+  max-height: 1550px;
+  opacity: 1;
+  -webkit-transition: all 1s ease-in 0.5s;
+  transition: all 1s ease-in 0.5s;
+}
+
+.note.deleted {
+  opacity: 0;
+  max-height: 0;
+}
+
+.note textarea {
+  position: relative;
+  min-height: 100px;
+  height: 200px;
+  max-height: 1600px;
+  background-color: rgba(0, 0, 0, 0.01);
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  outline: none;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.92);
+  white-space: pre-wrap;
+}
+
+.note textarea::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.note textarea::-webkit-scrollbar {
+  width: 7px;
+  background-color: transparent;
+}
+
+.note textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+}
+
+.note textarea:focus {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.note + #no-archived-alert,
+.badge {
+  display: none;
+}
+
+.badge.visible {
+  display: inline;
+}

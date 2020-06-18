@@ -2,8 +2,6 @@
 
 session_start();
 
-$user_email = "";
-
 if (array_key_exists("id", $_COOKIE)) {
 
     $_SESSION["id"] = $_COOKIE["id"];
@@ -37,7 +35,9 @@ if (isset($_SESSION["id"])) {
             $index += 1;
         }
         
-    };
+    }
+
+    mysqli_close($link);
 
 } else {
 
@@ -55,32 +55,31 @@ if (isset($_SESSION["id"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/index-styles.css">
     <link rel="shortcut icon" href="images/yin-yang.svg" type="image/x-icon">
     <title>Mind Garden</title>
 </head>
 
-<body id="index-body">
+<body class="text-light">
 
-    <nav class="navbar fixed-top navbar-light bg-light">
+    <nav class="navbar fixed-top navbar-light bg-light no-shadow">
         <div class="container">
-            <a class="navbar-brand" href="#"><img src="images/yin-yang.svg" class="yin-yang-logo medium">Mind Garden</a>
+            <a class="navbar-brand" href="#"><img src="images/yin-yang.svg" class="yin-yang-logo mr-3">Mind Garden</a>
             <span class="navbar-text mr-auto"><?php echo $user_email; ?></span>
-            <form class="form-inline" method="post" action="login.php">
-                <button type="submit" class="btn btn-outline-danger" id="logout-btn" name="action" value="logout">Log
-                    out</button>
+            <form class="form-inline d-inline-flex" method="post" action="login.php">
+                <button type="submit" class="btn btn-outline-danger" name="action" value="logout">Log out</button>
             </form>
             </div>
         </div>
     </nav>
 
     <main role="main" class="container">
-            <section class="col col-md-10 col-lg-8 mx-auto text-center notes-container" id="newNoteSection">
-                <h4 id="newNoteHeader">New note</h4>
+            <section class="col col-md-10 col-lg-8 mx-auto p-0 text-center">
+                <h4>New note</h4>
 
-                <article data-noteID="<?php echo $first_note["id"]; ?>">
+                <article data-noteID="<?php echo $first_note["id"]; ?>" class="note">
                     <div class="d-flex align-items-center">
-                        <small class="last-changed">Last changed <span class="last-changed-field"><?php echo $first_note["lastupdated"]; ?></span></small>
+                        <small class="last-changed mr-2 d-none">Last changed <span class="last-changed-field"><?php echo $first_note["lastupdated"]; ?></span></small>
                         <small class="alerts-container">
                             <span class="badge badge-secondary saving">Saving...</span>
                             <span class="badge badge-success saved">Changes saved!</span>
@@ -89,19 +88,19 @@ if (isset($_SESSION["id"])) {
                             <span class="badge badge-success archived">Note archived!</span>
                             <span class="badge badge-danger archive-failed">Archive failed!</span>
                         </small>
-                        <button class="btn btn-primary btn-sm ml-auto archiveNoteBtn visible">Archive note</button>
+                        <button class="btn btn-primary btn-sm ml-auto archive-note-btn">Archive note</button>
                     </div>
-                    <textarea class="form-control mt-1 mb-3 text-left noteInputField"><?php echo $first_note["content"]; ?></textarea>
+                    <textarea class="form-control mt-1 mb-3 p-2 text-left text-light"><?php echo $first_note["content"]; ?></textarea>
                 </article>
 
             </section>
-            <section class="col col-md-10 col-lg-8 mx-auto text-center notes-container" id="previousNotesSection">
-                <h4 id="previousNotesHeader">Archived notes</h4>
+            <section class="col col-md-10 col-lg-8 mx-auto p-0 text-center">
+                <h4>Archived notes</h4>
 
                 <?php foreach($previous_notes as $note): ?>
-                <article data-noteID="<?php echo $note["id"]; ?>">
+                <article data-noteID="<?php echo $note["id"]; ?>" class="note">
                     <div class="d-flex align-items-center">
-                        <small class="last-changed visible">Last changed <span class="last-changed-field"><?php echo $note["lastupdated"]; ?></span></small>
+                        <small class="last-changed mr-2 d-block">Last changed <span class="last-changed-field"><?php echo $note["lastupdated"]; ?></span></small>
                         <small class="alerts-container">
                             <span class="badge badge-secondary saving">Saving...</span>
                             <span class="badge badge-success saved">Changes saved!</span>
@@ -110,13 +109,13 @@ if (isset($_SESSION["id"])) {
                             <span class="badge badge-success deleted">Note deleted!</span>
                             <span class="badge badge-danger delete-failed">Delete failed!</span>
                         </small>
-                        <button class="btn btn-danger btn-sm ml-auto deleteNoteBtn visible">Delete note</button>
+                        <button class="btn btn-danger btn-sm ml-auto delete-note-btn">Delete note</button>
                     </div>
-                    <textarea class="form-control mt-1 mb-3 text-left noteInputField"><?php echo $note["content"]; ?></textarea>
+                    <textarea class="form-control mt-1 mb-3 p-2 text-left text-light"><?php echo $note["content"]; ?></textarea>
                 </article>
                 <?php endforeach; ?>
 
-                <p id="noArchivedAlert">You have no archived notes</p>
+                <p id="no-archived-alert">You have no archived notes</p>
 
             </section>
             <!-- <button class="btn btn-secondary d-block mx-auto mb-5">Load more notes</button> -->
@@ -134,7 +133,7 @@ if (isset($_SESSION["id"])) {
     </script>
     <script src="js/moment.min.js"></script>
     <script>
-        let userID = <?php echo $_SESSION["id"]; ?>; 
+        const userID = <?php echo $_SESSION["id"]; ?>; 
     </script>
     <script src="js/script.js"></script>
 </body>

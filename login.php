@@ -2,12 +2,6 @@
 
 session_start();
 
-$alertString = "";
-$email = "";
-$password = "";
-$remain = "";
-$checked = "";
-
 if (isset($_POST["action"]) && $_POST["action"] == "logout") {
 
     setcookie("id", "", time() - 60*60);
@@ -87,7 +81,7 @@ function login($id, $remain) {
 
 function createAlert($type, $message) {
     // $type can be warning, danger or success
-    return "<div class='alert col-md-8 col-lg-6 my-4 mx-auto alert-".$type."'>".$message."</div>";
+    return "<div class='alert alert-".$type." col-md-8 col-lg-6 my-4 mx-auto no-shadow'>".$message."</div>";
 }
 
 ?>
@@ -102,28 +96,25 @@ function createAlert($type, $message) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="shortcut icon" href="images/yin-yang.svg" type="image/x-icon">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/login-styles.css">
 </head>
 
-<body id="login-body">
+<body class="text-light">
 
     <div class="container">
         <div class="row page-row align-items-center">
-            <div class="col text-center" id="log-in-page">
-                <h1><img src="images/yin-yang.svg" class="yin-yang-logo large">Mind Garden</h1>
-                <span class="mb-2">
-                    <strong>Keeping a diary? Writing a novel? Or just need a place to organise your thoughts?</strong>
-                </span>
-                <span class="mb-2"><strong>Use Mind Garden.</strong></span>
-                <span class="mb-2">Sign up for free now.</span>
+            <main class="col text-center">
+                <h1><img src="images/yin-yang.svg" class="yin-yang-logo mr-2">Mind Garden</h1>
+                <p><strong>Keeping a diary? Writing a novel? Or just need a place to organise your thoughts?</strong></p>
+                <p><strong>Use Mind Garden.</strong></p>
+                <p>Sign up for free now.</p>
                 <div class="form-container col-12 col-md-6 col-lg-4 mx-auto" id="sign-up-form">
                     <form method="post">
                         <div class="form-group">
                             <input type="email" class="form-control" id="signup-email" name="email"
                                 aria-describedby="emailHelp" placeholder="Your email address" required
                                 value="<?php echo $email; ?>">
-                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                                else.</small>
+                            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                         </div>
                         <div class="form-group">
                             <input type="password" class="form-control" id="signup-password" name="password"
@@ -139,7 +130,7 @@ function createAlert($type, $message) {
                     </form>
                 </div>
                 <?php echo $alertString; ?>
-            </div>
+            </main>
         </div>
     </div>
 

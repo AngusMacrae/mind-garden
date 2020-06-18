@@ -1,12 +1,12 @@
 const main = document.querySelector('main');
-const noteInputFields = document.querySelectorAll('.noteInputField');
-const archiveNoteBtn = document.querySelector('.archiveNoteBtn');
+const noteInputFields = document.querySelectorAll('.note textarea');
+const archiveNoteBtn = document.querySelector('.archive-note-btn');
 
 const APIurl = '/api/notes.php';
 // userID is also available as a variable
 
 archiveNoteBtn.addEventListener('click', function (e) {
-  const noteToArchive = this.closest('article');
+  const noteToArchive = this.closest('.note');
   const noteIDToArchive = noteToArchive.dataset.noteid;
 
   showAlert('archiving', noteIDToArchive);
@@ -37,10 +37,10 @@ for (let i = 0; i < noteInputFields.length; i++) {
   let timer = 0;
 
   noteInputFields[i].addEventListener('input', function (e) {
-    const note = this.closest('article');
+    const note = this.closest('.note');
     const lastUpdated = moment().format('YYYY-MM-DD [at] HH:mm');
     note.querySelector('.last-changed-field').textContent = lastUpdated;
-    note.querySelector('.last-changed').classList.add('visible');
+    note.querySelector('.last-changed').classList.add('d-block');
 
     const noteIDToUpdate = note.dataset.noteid;
     showAlert('saving', noteIDToUpdate);
@@ -54,13 +54,13 @@ for (let i = 0; i < noteInputFields.length; i++) {
 }
 
 main.addEventListener('click', function (e) {
-  if (e.target.classList.contains('deleteNoteBtn')) {
+  if (e.target.classList.contains('delete-note-btn')) {
     e.target.setAttribute('disabled', 'true');
 
-    const noteToDelete = e.target.closest('article');
+    const noteToDelete = e.target.closest('.note');
     const noteIDToDelete = noteToDelete.dataset.noteid;
 
-    e.target.classList.toggle('visible');
+    e.target.classList.toggle('d-none');
     showAlert('deleting', noteIDToDelete);
 
     fetch(`${APIurl}?noteID=${noteIDToDelete}&userID=${userID}`, {
@@ -77,7 +77,7 @@ main.addEventListener('click', function (e) {
       })
       .catch(error => {
         console.log(error);
-        e.target.classList.toggle('visible');
+        e.target.classList.toggle('d-none');
         showAlert('delete-failed', noteIDToDelete);
         e.target.removeAttribute('disabled');
         e.target.focus();
@@ -87,11 +87,7 @@ main.addEventListener('click', function (e) {
 
 function updateNote(noteIDToUpdate, lastUpdated) {
   const note = main.querySelector('[data-noteID="' + noteIDToUpdate + '"]');
-  let noteContent = note.querySelector('.noteInputField').value;
-  // const patt2 = new RegExp("<div>", "g");
-  // const patt3 = new RegExp("</div>", "g");
-  // const patt4 = new RegExp("<br>", "g");
-  // noteContent = noteContent.replace(patt2, "\n").replace(patt3, "").replace(patt4, "");
+  const noteContent = note.querySelector('textarea').value;
 
   const headers = {
     'Content-Type': 'application/json',
