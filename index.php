@@ -10,7 +10,7 @@ if (array_key_exists("id", $_COOKIE)) {
 
 }
 
-if (array_key_exists("id", $_SESSION)) {
+if (isset($_SESSION["id"])) {
 
     $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
 
@@ -20,12 +20,11 @@ if (array_key_exists("id", $_SESSION)) {
     }
 
     // get user email
-    $query = "SELECT * FROM users WHERE id = '".$_SESSION["id"]."'";
+    $query = "SELECT email FROM users WHERE id = '".$_SESSION["id"]."'";
     $result = mysqli_query($link, $query);
-    $row = mysqli_fetch_array($result);
-    $user_email = $row["email"];
+    $user_email = mysqli_fetch_array($result)[0];
 
-    // grab previous posts 
+    // get previous posts 
     $query = "SELECT * FROM notes WHERE userid = '".$_SESSION["id"]."' ORDER BY id DESC";
     if ($result = mysqli_query($link, $query)) {
 
@@ -35,7 +34,7 @@ if (array_key_exists("id", $_SESSION)) {
         $index = 0;
         while ($row = mysqli_fetch_array($result)) {
             $previous_notes[$index] = $row;
-            $index +=1;
+            $index += 1;
         }
         
     };
@@ -111,7 +110,7 @@ if (array_key_exists("id", $_SESSION)) {
                             <span class="badge badge-success deleted">Note deleted!</span>
                             <span class="badge badge-danger delete-failed">Delete failed!</span>
                         </small>
-                        <button class="btn btn-danger btn-sm ml-auto deleteNoteBtn visible" id="testDeleteBtn">Delete note</button>
+                        <button class="btn btn-danger btn-sm ml-auto deleteNoteBtn visible">Delete note</button>
                     </div>
                     <textarea class="form-control mt-1 mb-3 text-left noteInputField"><?php echo $note["content"]; ?></textarea>
                 </article>

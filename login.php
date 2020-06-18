@@ -8,66 +8,52 @@ $password = "";
 $remain = "";
 $checked = "";
 
-if ($_POST) {
+if (array_key_exists("logout", $_POST)) {
 
-    if (array_key_exists("logout", $_POST)) {
+    setcookie("id", "", time() - 60*60);
+    $_COOKIE["id"] = "";
+    unset($_SESSION);
+    session_destroy();
+    $alertString = createAlert("success", "You have been logged out.");
+    
+} else if (isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["signup"])) {
 
-        setcookie("id", "", time() - 60*60);
-        $_COOKIE["id"] = "";
-        unset($_SESSION);
-        session_destroy();
-        $alertString = createAlert("success", "You have been logged out.");
-        
-    } else {
+    $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
 
-        $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
+    if (mysqli_connect_error()) {
+        echo "Failed to connect to MySQL: ".mysqli_connect_error();
+        die ("There was an error connecting to the database");
+    }
 
-        if (mysqli_connect_error()) {
-            echo "Failed to connect to MySQL: ".mysqli_connect_error();
-            die ("There was an error connecting to the database");
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+    $remain = isset($_POST["remain"]) ? true : false;
+    $checked = ($remain) ? "checked" : "";
+    $signup = $_POST["signup"]; // =1 for signup, 0 for login
+
+    if ($signup == 1) {
+
+        if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
+            $alertString = createAlert("warning", "The email address you entered is already signed up! Try logging in instead.");
+        } else {
+            signup($link, $email, $password);
+            login(mysqli_insert_id($link), $remain);
         }
 
-        $email = $_POST["email"];
-        $password = $_POST["password"];
-        $remain = isset($_POST["remain"]) ? true : false;
-        $checked = ($remain) ? "checked" : "";
-        $signup = $_POST["signup"];
+    } else if ($signup == 0) {
 
-        if ($signup == 1) {
+        if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
 
-            if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
+            $row = mysqli_fetch_array($result);
 
-                $alertString = createAlert("warning", "The email address you entered is already signed up! Try logging in instead.");
-
+            if (password_verify($password, $row["pwdhash"])) {
+                login($row["id"], $remain);
             } else {
-
-                signup($link, $email, $password);
-                login(mysqli_insert_id($link), $remain);
-
+                $alertString = createAlert("danger", "Incorrect password.");
             }
 
-        } else if ($signup == 0) {
-
-            if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
-
-                $row = mysqli_fetch_array($result);
-
-                if (password_verify($password, $row["pwdhash"])) {
-
-                    login($row["id"], $remain);
-
-                } else {
-
-                    $alertString = createAlert("danger", "Incorrect password.");
-
-                }
-
-            } else {
-
-                $alertString = createAlert("warning", "It seems you aren't signed up yet. You can't login until you're signed up first!");
-
-            }
-
+        } else {
+            $alertString = createAlert("warning", "It seems you aren't signed up yet. You can't login until you're signed up first!");
         }
 
     }
@@ -75,24 +61,19 @@ if ($_POST) {
 }
 
 function selectUser($link, $email) {
-
     $query = "SELECT * FROM users WHERE email = '".mysqli_real_escape_string($link, $email)."'";
     return mysqli_query($link, $query);
-
 }
 
 function signup($link, $email, $password) {
-
     $query = "INSERT INTO users (email, pwdhash) VALUES ('".mysqli_real_escape_string($link, $email)."', '".password_hash($password, PASSWORD_DEFAULT)."')";
     mysqli_query($link, $query);
 
     $query = "INSERT INTO notes (userid, content, created, lastupdated) VALUES (".mysqli_insert_id($link).", '', '', '')";
     mysqli_query($link, $query);
-
 }
 
 function login($id, $remain) {
-
     $_SESSION["id"] = $id;
 
     if ($remain) {
@@ -100,14 +81,11 @@ function login($id, $remain) {
     }
 
     header("Location: index.php");
-
 }
 
 function createAlert($type, $message) {
-
     // $type can be warning, danger or success
     return "<div class='alert col-md-8 col-lg-6 my-4 mx-auto alert-".$type."'>".$message."</div>";
-
 }
 
 ?>
@@ -131,8 +109,9 @@ function createAlert($type, $message) {
         <div class="row page-row align-items-center">
             <div class="col text-center" id="log-in-page">
                 <h1><img src="images/yin-yang.svg" class="yin-yang-logo large">Mind Garden</h1>
-                <span class="mb-2"><strong>Keeping a diary? Writing a novel? Or just need a place to organise your
-                        thoughts?</strong></span>
+                <span class="mb-2">
+                    <strong>Keeping a diary? Writing a novel? Or just need a place to organise your thoughts?</strong>
+                </span>
                 <span class="mb-2"><strong>Use Mind Garden.</strong></span>
                 <span class="mb-2">Sign up for free now.</span>
                 <div class="form-container col-12 col-md-6 col-lg-4 mx-auto" id="sign-up-form">
