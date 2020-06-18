@@ -67,7 +67,7 @@ if (isset($_SESSION["id"])) {
             <a class="navbar-brand" href="#"><img src="images/yin-yang.svg" class="yin-yang-logo medium">Mind Garden</a>
             <span class="navbar-text mr-auto"><?php echo $user_email; ?></span>
             <form class="form-inline" method="post" action="login.php">
-                <button type="submit" class="btn btn-outline-danger" id="logout-btn" name="logout" value="1">Log
+                <button type="submit" class="btn btn-outline-danger" id="logout-btn" name="action" value="logout">Log
                     out</button>
             </form>
             </div>

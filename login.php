@@ -8,7 +8,7 @@ $password = "";
 $remain = "";
 $checked = "";
 
-if (array_key_exists("logout", $_POST)) {
+if (isset($_POST["action"]) && $_POST["action"] == "logout") {
 
     setcookie("id", "", time() - 60*60);
     $_COOKIE["id"] = "";
@@ -16,7 +16,7 @@ if (array_key_exists("logout", $_POST)) {
     session_destroy();
     $alertString = createAlert("success", "You have been logged out.");
     
-} else if (isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["signup"])) {
+} else if (isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["action"])) {
 
     $link = mysqli_connect("shareddb-u.hosting.stackcp.net", "user12345678", "user12345678", "users-dbase-3133339a99");
 
@@ -29,9 +29,9 @@ if (array_key_exists("logout", $_POST)) {
     $password = $_POST["password"];
     $remain = isset($_POST["remain"]) ? true : false;
     $checked = ($remain) ? "checked" : "";
-    $signup = $_POST["signup"]; // =1 for signup, 0 for login
+    $action = $_POST["action"];
 
-    if ($signup == 1) {
+    if ($action == "signup") {
 
         if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
             $alertString = createAlert("warning", "The email address you entered is already signed up! Try logging in instead.");
@@ -39,7 +39,7 @@ if (array_key_exists("logout", $_POST)) {
             signup($link, $email, $password, $remain);
         }
 
-    } else if ($signup == 0) {
+    } else if ($action == "login") {
 
         if (mysqli_num_rows($result = selectUser($link, $email)) > 0) {
 
@@ -134,8 +134,8 @@ function createAlert($type, $message) {
                                 <?php echo $checked; ?>>
                             <label class="form-check-label" for="stayCheck">Stay logged in</label>
                         </div>
-                        <button type="submit" class="btn btn-outline-primary" name="signup" value="0">Log in</button>
-                        <button type="submit" class="btn btn-primary" name="signup" value="1">Sign Up!</button>
+                        <button type="submit" class="btn btn-outline-primary" name="action" value="login">Log in</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="signup">Sign Up!</button>
                     </form>
                 </div>
                 <?php echo $alertString; ?>
