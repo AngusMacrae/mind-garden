@@ -22,7 +22,6 @@ if (isset($_POST["action"]) && $_POST["action"] == "logout") {
     $email = $_POST["email"];
     $password = $_POST["password"];
     $remain = isset($_POST["remain"]) ? true : false;
-    $checked = ($remain) ? "checked" : "";
     $action = $_POST["action"];
 
     if ($action == "signup") {
@@ -121,9 +120,9 @@ function createAlert($type, $message) {
                                 placeholder="Your password" required value="<?php echo $password; ?>">
                         </div>
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="signup-stayCheck" name="remain"
-                                <?php echo $checked; ?>>
-                            <label class="form-check-label" for="stayCheck">Stay logged in</label>
+                            <input type="checkbox" class="form-check-input" id="signup-remain" name="remain"
+                                <?php echo ($remain) ? "checked" : ""; ?>>
+                            <label class="form-check-label" for="signup-remain">Stay logged in</label>
                         </div>
                         <button type="submit" class="btn btn-outline-primary" name="action" value="login">Log in</button>
                         <button type="submit" class="btn btn-primary" name="action" value="signup">Sign Up!</button>
