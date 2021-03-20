@@ -2,7 +2,7 @@ const main = document.querySelector('main');
 const noteInputFields = document.querySelectorAll('.note textarea');
 const archiveNoteBtn = document.querySelector('.archive-note-btn');
 
-const APIurl = '/api/notes.php';
+const APIurl = '/api/';
 
 archiveNoteBtn.addEventListener('click', function (e) {
   const noteToArchive = this.closest('.note');
@@ -32,10 +32,10 @@ archiveNoteBtn.addEventListener('click', function (e) {
     });
 });
 
-for (let i = 0; i < noteInputFields.length; i++) {
+noteInputFields.forEach(inputField => {
   let timer = 0;
 
-  noteInputFields[i].addEventListener('input', function (e) {
+  inputField.addEventListener('input', function () {
     const note = this.closest('.note');
     const lastUpdated = moment().format('YYYY-MM-DD [at] HH:mm');
     note.querySelector('.last-changed-field').textContent = lastUpdated;
@@ -50,7 +50,7 @@ for (let i = 0; i < noteInputFields.length; i++) {
       timer = null;
     }, 2000);
   });
-}
+});
 
 main.addEventListener('click', function (e) {
   if (e.target.classList.contains('delete-note-btn')) {
@@ -85,7 +85,7 @@ main.addEventListener('click', function (e) {
 });
 
 function updateNote(noteIDToUpdate, lastUpdated) {
-  const note = main.querySelector('[data-noteID="' + noteIDToUpdate + '"]');
+  const note = main.querySelector(`[data-noteID="${noteIDToUpdate}"]`);
   const noteContent = note.querySelector('textarea').value;
 
   const headers = {
@@ -123,7 +123,7 @@ function showAlert(alertType, noteID) {
   const note = main.querySelector('[data-noteID="' + noteID + '"]');
   const alerts = note.querySelectorAll('.badge');
   alerts.forEach(elem => elem.classList.remove('visible'));
-  const alertToShow = note.querySelector('.' + alertType);
+  const alertToShow = note.querySelector(`.${alertType}`);
   alertToShow.classList.add('visible');
   if (alertType == 'saved') {
     setTimeout(() => {
